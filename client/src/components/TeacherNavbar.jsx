@@ -6,7 +6,7 @@ import { AiOutlineClose } from 'react-icons/ai';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 
-const Header = () => {
+const TeacherNavbar = () => {
   const [isNavShowing, setIsNavShowing] = useState(window.innerWidth > 800 ? true : false);
   
   const closeNavHandler = () => {
@@ -24,10 +24,10 @@ const Header = () => {
       </Link>
       {isNavShowing && (
         <ul className='nav_menu'>
-          <li><Link to="/dashboard" onClick={closeNavHandler}>Current</Link></li>
-          <li><Link to="/submitted" onClick={closeNavHandler}>Submitted</Link></li>
-          <li><Link to="/failed" onClick={closeNavHandler}>Failed</Link></li>
-          <li><Link to="/leaderboard" onClick={closeNavHandler}>Leaderboard</Link></li>
+          <li><Link to="/teacherdashboard" onClick={closeNavHandler}>Submitted</Link></li>
+          <li><Link to="/failedStudents" onClick={closeNavHandler}>Failed</Link></li>
+          <li><Link to="/teacherLeaderboard" onClick={closeNavHandler}>Leaderboard</Link></li>
+          <li><Link to="/upload" onClick={closeNavHandler}>Upload</Link></li>
           <li className='profile_avatar'>
             <Stack direction="row" spacing={2}>
               <Avatar>H</Avatar>
@@ -42,4 +42,4 @@ const Header = () => {
   );
 }
 
-export default Header;
+export default TeacherNavbar;
