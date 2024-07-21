@@ -1,0 +1,25 @@
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    /* background-color: #f9f9f9; */
+    border-radius: 8px;
+    /* box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); */
+    width: 300px;
+    margin-right: 20px;
+}
+
+.sidebar .form-control {
+    width: 100%;
+}
+
+.sidebar .rubric-button {
+    background-color: #007BFF;
+    color: white;
+    width: 100%;
+}
+
+.sidebar .rubric-button:hover {
+    background-color: #0056b3;
+}

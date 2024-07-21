@@ -3,6 +3,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import Upload from './pages/Upload';
 
 
 
@@ -13,6 +14,8 @@ function App() {
         <Route path="/" element={<Login />} /> 
         <Route path="/signup" element={<Register />} /> 
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/upload" element={<Upload />} />
+
       </Routes>
     </div>
   );
