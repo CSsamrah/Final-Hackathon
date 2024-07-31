@@ -51,7 +51,7 @@ const Register = () => {
 
   return (
     <section className='register'>
-      <div className='container'>
+      <div className='Nav-container'>
         <form className='form register-form' onSubmit={submitHandler}>
           <img src={Logo} alt="Navbar Logo" className='register-img' />
           <input

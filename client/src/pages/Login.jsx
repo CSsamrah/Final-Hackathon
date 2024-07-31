@@ -44,7 +44,7 @@ const Login = () => {
 
   return (
     <section className='login'>
-      <div className='container'>
+      <div className='Nav-container'>
         <form className='form login-form' onSubmit={submitHandler}>
           <img src={Logo} alt="Navbar Logo" className='register-img' />
           <input
