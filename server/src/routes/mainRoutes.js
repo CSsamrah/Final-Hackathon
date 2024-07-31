@@ -5,6 +5,7 @@ const {loginUser,signupUser}=require('../controllers/registerControllers');
 const { submitAssignment,createAssignment } = require('../controllers/assignmentControllers');
 
 const multer = require('multer');
+const { getCurrentAssignments, getSubmittedAssignments } = require('../controllers/studentController');
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -15,6 +16,8 @@ const upload = multer({
 router.post('/login', loginUser);
 router.post('/signup', signupUser);
 router.post('/submit',upload.single('file'),submitAssignment);
-router.post('/create',upload.single('file'),createAssignment)
+router.post('/create',upload.single('file'),createAssignment);
+router.get('/current/:studentId',getCurrentAssignments)
+router.get('/submitted/:studentId',getSubmittedAssignments)
 
 module.exports = router;
