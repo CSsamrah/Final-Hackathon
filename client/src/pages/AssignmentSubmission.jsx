@@ -1,18 +1,39 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './AssignmentSubmission.css';
 import { AiOutlineClose } from 'react-icons/ai';
-import { Link } from 'react-router-dom';
-
+import { Link, useLocation } from 'react-router-dom';
 
 const AssignmentSubmission = () => {
+    const location = useLocation();
+
+    useEffect(() => {
+        // Force reflow on mount
+        const handleResize = () => {
+            window.dispatchEvent(new Event('resize'));
+        };
+
+        // Trigger resize event on mount
+        handleResize();
+
+        // Add resize event listener
+        window.addEventListener('resize', handleResize);
+
+        // Clean up event listener on component unmount
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [location]);
+
     return (
-        <div className='mainAssignDiv'>
+        <div className='mainAssignDiv' key={location.pathname}>
             <div className="assignment-submission">
-                <div className="header1" >
-                    <button className='crossBtn'><Link Link to="/dashboard"><AiOutlineClose /></Link></button>
+                <div className="header1">
+                    <button className='crossBtn'>
+                        <Link to="/dashboard"><AiOutlineClose /></Link>
+                    </button>
                     <h2 className='headH1'>Assignment Submission</h2>
                 </div>
-                <div className="content2" >
+                <div className="content2">
                     <h3>Intro to React</h3>
                     <div className='mainP'>
                         <div className='p1'>
@@ -34,16 +55,15 @@ const AssignmentSubmission = () => {
             </div>
             <div className="your-work">
                 <div className='work1'>
-                <h3>Your work</h3>
-                <p className="status">Missing</p>
+                    <h3>Your work</h3>
+                    <p className="status">Missing</p>
                 </div>
                 <div className='assignBtn'>
-                <button className="add-or-create">ADD OR CREATE</button>
-                <button className="mark-as-done">MARK AS DONE</button>
+                    <button className="add-or-create">ADD OR CREATE</button>
+                    <button className="mark-as-done">MARK AS DONE</button>
                 </div>
             </div>
         </div>
-
     );
 };
 

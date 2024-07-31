@@ -5,6 +5,10 @@ import Description from '../components/Description';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import Sidebar from '../components/SideBar';
 import FileLinkUploader from '../components/UploadLink';
+import { AiOutlineClose } from 'react-icons/ai';
+import { Link, useLocation } from 'react-router-dom';
+
+
 
 export default function Upload() {
     const handleAssign = () => {
@@ -13,18 +17,22 @@ export default function Upload() {
 
     return (
         <div className="container">
-            <div className="header">
-                <div className="icondiv"><AssignmentIcon />
-                    <h1>Assignment</h1></div>
+            <div className="header2">
+                <div className="icondiv">
+                    <button className='crossBtn'>
+                        <Link to="/teacherdashboard"><AiOutlineClose/></Link>
+                    </button>
+                    <AssignmentIcon />
+                    <h1>Assignment</h1>
+                </div>
                 <Button variant="contained" className="assign-button" onClick={handleAssign}>
                     Assign
                 </Button>
             </div>
-            <div className="mainUpload" style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginLeft: "15px" }}>
-                    <Description />
+            <div className="mainUpload">
+                <Description />
                 <Sidebar />
             </div>
-
         </div>
     );
 }

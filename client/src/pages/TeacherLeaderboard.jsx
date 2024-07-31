@@ -35,7 +35,7 @@ import {
     return (
       <div style={{ padding: '20px' }}>
         <Typography variant="h4" gutterBottom style={{ fontWeight: 'bolder', padding: '10px 20px' }}>
-          TeacherLeaderboard
+          Leaderboard
         </Typography>
         <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
           <TextField
