@@ -20,7 +20,6 @@
 .content2 {
     padding: 5rem;
     width: 50rem;
-
 }
 
 .content2 h3 {
@@ -62,7 +61,6 @@ hr {
 .description {
     line-height: 1.8rem;
 }
-
 
 .your-work {
     width: 18rem;
@@ -123,26 +121,44 @@ hr {
 
 @media screen and (max-width: 800px) {
     .mainAssignDiv {
-        display: flex;
-        flex-wrap: wrap;
+        display: block; /* Adjust to block layout for small screens */
+        width: 100%;
     }
 
     .your-work {
-        margin-left: 5rem;
-        width: 25rem;
+        margin: 0 auto; /* Center the element */
+        width: 100%;
     }
 
+    .header1 {
+        position: relative; /* Adjust position if needed */
+    }
+
+    .content2 {
+        padding: 2rem; /* Adjust padding for smaller screens */
+        width: 100%;
+    }
 }
 
 @media screen and (max-width: 1200px) {
     .mainAssignDiv {
-        display: flex;
-        flex-wrap: wrap;
+        display: block; /* Adjust to block layout for small screens */
+        width: 100%;
     }
 
     .your-work {
-        margin-left: 5rem;
-        width: 25rem;
+        margin: 0 auto; /* Center the element */
+        width: 100%;
     }
 
+    .header1 {
+        position: relative; /* Adjust position if needed */
+    }
+
+    .content2 {
+        padding: 2rem; /* Adjust padding for smaller screens */
+        width: 100%;
+    }
+
+    
 }

@@ -12,20 +12,39 @@ import {
   TextField,
   Stack,
   Typography,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import { FilterList, GetApp } from '@mui/icons-material';
 
-const assignments = [
-  { id: 1, student: 'John Doe', assignment: 'Assignment 1', marks: '86/100', status: 'Good' },
-  { id: 2, student: 'Jane Smith', assignment: 'Assignment 2', marks: '96/100', status: 'Excellent' },
-  { id: 3, student: 'Sam Brown', assignment: 'Assignment 3', marks: '60/100', status: 'Average' },
+const initialAssignments = [
+  { id: 1, student: 'John Doe', assignment: 'Assignment 1', marks: '86/100', status: 'Good', fileUrl: '/path/to/assignment1.pdf' },
+  { id: 2, student: 'Jane Smith', assignment: 'Assignment 2', marks: '96/100', status: 'Excellent', fileUrl: '/path/to/assignment2.pdf' },
+  { id: 3, student: 'Sam Brown', assignment: 'Assignment 3', marks: '60/100', status: 'Average', fileUrl: '/path/to/assignment3.pdf' },
 ];
 
 const AssignmentsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [assignments, setAssignments] = useState(initialAssignments);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
+  };
+
+  const handleMarksChange = (id, value) => {
+    setAssignments((prevAssignments) =>
+      prevAssignments.map((assignment) =>
+        assignment.id === id ? { ...assignment, marks: value } : assignment
+      )
+    );
+  };
+
+  const handleStatusChange = (id, value) => {
+    setAssignments((prevAssignments) =>
+      prevAssignments.map((assignment) =>
+        assignment.id === id ? { ...assignment, status: value } : assignment
+      )
+    );
   };
 
   const filteredAssignments = assignments.filter((assignment) =>
@@ -62,6 +81,7 @@ const AssignmentsPage = () => {
               <TableCell>Assignment</TableCell>
               <TableCell>Marks</TableCell>
               <TableCell>Status</TableCell>
+              <TableCell>View Assignment</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -70,9 +90,37 @@ const AssignmentsPage = () => {
                 <TableCell>{assignment.id}</TableCell>
                 <TableCell>{assignment.student}</TableCell>
                 <TableCell>{assignment.assignment}</TableCell>
-                <TableCell>{assignment.marks}</TableCell>
                 <TableCell>
-                  <span className={assignment.status.toLowerCase()}>{assignment.status}</span>
+                  <TextField
+                    variant="outlined"
+                    value={assignment.marks}
+                    onChange={(e) => handleMarksChange(assignment.id, e.target.value)}
+                    size="small"
+                  />
+                </TableCell>
+                <TableCell>
+                  <Select
+                    value={assignment.status}
+                    onChange={(e) => handleStatusChange(assignment.id, e.target.value)}
+                    variant="outlined"
+                    size="small"
+                    fullWidth
+                  >
+                    <MenuItem value="Excellent">Excellent</MenuItem>
+                    <MenuItem value="Good">Good</MenuItem>
+                    <MenuItem value="Average">Average</MenuItem>
+                    <MenuItem value="Poor">Poor</MenuItem>
+                  </Select>
+                </TableCell>
+                <TableCell>
+                  <Button 
+                    variant="contained" style={{ background:"white", color:"#0D6DB7" , border: "none", boxShadow:"none", fontWeight: "bold"}}
+                    href={assignment.fileUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    View
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

@@ -87,6 +87,16 @@ const Register = () => {
             onChange={changeInputHandler}
             required
           />
+          <div class="user-role">
+            <label>
+              <input type="radio" name="role" value="student" required />
+              Student
+            </label>
+            <label>
+              <input type="radio" name="role" value="teacher" required />
+              Teacher
+            </label>
+          </div>
           <button type='submit' className='btn register'>Register</button>
           {error && <p className='error'>{error}</p>}
         </form>

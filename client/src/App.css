@@ -222,6 +222,20 @@ input {
   margin: 0 auto;
 }
 
+.user-role {
+  display: flex;
+  justify-content:space-around;
+  margin-bottom: 10px;
+}
+
+.user-role label {
+  display: flex;
+  align-items: center;
+}
+
+.user-role input {
+  margin-right: 5px;
+}
 
 
 
