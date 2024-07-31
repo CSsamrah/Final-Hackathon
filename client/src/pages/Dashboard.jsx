@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
+import { Link } from 'react-router-dom';
+
 import {
   Table,
   TableBody,
@@ -70,7 +72,7 @@ const AssignmentsPage = () => {
                 <TableCell>{assignment.deadline}</TableCell>
                 <TableCell>
                   <Button variant="contained" style={{ background:"white", color:"#0D6DB7" , border: "none", boxShadow:"none", fontWeight: "bold"}}>
-                    {assignment.submit}
+                    <Link to="/assignmentsubmission">{assignment.submit}</Link>
                   </Button>
                 </TableCell>
               </TableRow>

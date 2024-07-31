@@ -107,7 +107,8 @@ section {
 
 /*==============================Navbar==============================*/
 nav {
-  display: flex; /* Changed to flex for easier alignment */
+  display: flex;
+  /* Changed to flex for easier alignment */
   justify-content: space-between;
   align-items: center;
   position: fixed;
@@ -120,7 +121,8 @@ nav {
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 1rem; /* Added padding for spacing */
+  padding: 1rem;
+  /* Added padding for spacing */
   gap: 6rem;
   box-shadow: 0 8px 16px -8px rgba(0, 0, 0, 0.2);
 
@@ -142,7 +144,8 @@ nav {
 }
 
 .profile_avatar {
-  margin-left: auto; /* Pushes the avatar to the right */
+  margin-left: auto;
+  /* Pushes the avatar to the right */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -150,6 +153,13 @@ nav {
 
 .nav_toggle-btn {
   display: none;
+}
+
+.selectClass {
+
+  display: flex;
+  align-items: center;
+
 }
 
 /*==============================REGISTER AND FORM STYLE==============================*/
@@ -246,11 +256,13 @@ input {
   .nav_container {
     position: relative;
   }
+
   .nav_logo {
     width: 5rem;
     display: block;
-  
+
   }
+
   .nav_menu {
     position: absolute;
     top: 5rem;
@@ -268,6 +280,7 @@ input {
     transform: rotateX(90deg);
     transform-origin: top;
   }
+
   .profile_avatar {
     display: none;
   }
