@@ -96,9 +96,9 @@ const Register = () => {
               required
             >
               <option value="">-- Select Class --</option>
-              <option value="class1">Class 1</option>
-              <option value="class2">Class 2</option>
-              <option value="class3">Class 3</option>
+              <option value="G-10">G-10</option>
+              <option value="Class 2">Class 2</option>
+              <option value="Class 3">Class 3</option>
             </select>
           </div>
           <div className="user-role">
