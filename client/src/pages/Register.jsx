@@ -7,7 +7,9 @@ const Register = () => {
     name: '',
     email: '',
     password: '',
-    password2: ''
+    password2: '',
+    role: '', // Added role
+    class: '' // Added class
   });
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -27,7 +29,7 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/signup', { // Adjust the URL based on your API setup
+      const response = await fetch('http://localhost:8000/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,10 +40,8 @@ const Register = () => {
       const result = await response.json();
 
       if (response.ok) {
-        // Handle successful registration (e.g., redirect to login)
         navigate('/');
       } else {
-        // Handle errors (e.g., show error message)
         setError(result.msg || 'An error occurred');
       }
     } catch (error) {
@@ -87,16 +87,43 @@ const Register = () => {
             onChange={changeInputHandler}
             required
           />
-          <div class="user-role">
+          <div className="class-selection">
+            <select
+              name="class"
+              id="class"
+              value={userData.class}
+              onChange={changeInputHandler}
+              required
+            >
+              <option value="">-- Select Class --</option>
+              <option value="class1">Class 1</option>
+              <option value="class2">Class 2</option>
+              <option value="class3">Class 3</option>
+            </select>
+          </div>
+          <div className="user-role">
             <label>
-              <input type="radio" name="role" value="student" required />
+              <input
+                type="radio"
+                name="role"
+                value="student"
+                onChange={changeInputHandler}
+                required
+              />
               Student
             </label>
             <label>
-              <input type="radio" name="role" value="teacher" required />
+              <input
+                type="radio"
+                name="role"
+                value="teacher"
+                onChange={changeInputHandler}
+                required
+              />
               Teacher
             </label>
           </div>
+
           <button type='submit' className='btn register'>Register</button>
           {error && <p className='error'>{error}</p>}
         </form>

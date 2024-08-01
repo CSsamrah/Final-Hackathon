@@ -199,6 +199,9 @@ input {
   align-items: center;
   margin: 1.5rem 0;
 }
+.register small{
+  margin-top: 1rem;
+}
 
 .register small a,
 .login small a {
@@ -222,6 +225,7 @@ input {
   margin: 0 auto;
 }
 
+
 .user-role {
   display: flex;
   justify-content:space-around;
@@ -235,6 +239,19 @@ input {
 
 .user-role input {
   margin-right: 5px;
+}
+
+
+.class-selection select{
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  border-radius: 2rem;
+  background-color: #f5f5f5;
+  margin: 0 auto;
+  color: rgb(116, 116, 116);
 }
 
 
@@ -332,7 +349,10 @@ input {
     margin-left: 10rem;
   }
 
-
+  .class-selection select{
+    width: 70%;
+  }
+ 
 }
 
 
@@ -356,6 +376,17 @@ input {
     font-size: 0.7rem;
   }
 }
+@media screen and (min-width: 900px) {
+  .class-selection select{
+    width: 50%;
+  }
+}
+@media screen and (min-width: 800px) {
+  .class-selection select{
+    width: 50%;
+  }
+}
+
 
 /* Large devices (min-width: 1200px) */
 @media (min-width: 1200px) {
@@ -377,5 +408,8 @@ input {
   .btn.login {
     width: 12rem;
     font-size: 0.85rem;
+  }
+  .class-selection select{
+    width: 80%;
   }
 }
