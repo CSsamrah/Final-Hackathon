@@ -13,7 +13,7 @@ import IconButton from '@mui/material/IconButton';
 
 const TeacherNavbar = () => {
   const [isNavShowing, setIsNavShowing] = useState(window.innerWidth > 800 ? true : false);
-  
+
   const closeNavHandler = () => {
     if (window.innerWidth < 800) {
       setIsNavShowing(false);

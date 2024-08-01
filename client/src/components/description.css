@@ -1,6 +1,6 @@
 .mainDescription {
-  width:70%; /* Full width with a 20px margin on each side */
-  margin: 20px 20px; /* Center the div with top and bottom margin */
+  width: 70%;
+  margin: 20px 20px;
   padding: 20px;
   padding-bottom: 80px;
   background-color: #f9f9f9;
@@ -45,58 +45,59 @@
 .editorToolbar button {
   font-size: 16px;
 }
+
 .editorToolbar {
   display: flex;
   justify-content: flex-start;
   gap: 30px;
   margin-top: 10px;
 }
+
 @media (max-width: 1200px) {
   .mainDescription {
-      width: 80%;
-      margin: 20px auto; /* Center the mainDescription element */
-      padding: 15px;
+    width: 80%;
+    margin: 20px auto;
+    padding: 15px;
   }
 
   .titleInput {
-      font-size: 16px;
+    font-size: 16px;
   }
 
   .descriptionInput {
-      font-size: 14px;
+    font-size: 14px;
   }
 
   .editorToolbar {
-      gap: 20px;
+    gap: 20px;
   }
 }
 
-/* For screens up to 800px wide */
 @media (max-width: 800px) {
   .mainDescription {
-      width: 90%;
-      margin: 15px auto;
-      padding: 10px;
-      padding-bottom: 60px;
+    width: 90%;
+    margin: 15px auto;
+    padding: 10px;
+    padding-bottom: 60px;
   }
 
   .titleInput {
-      font-size: 14px;
-      padding: 8px;
+    font-size: 14px;
+    padding: 8px;
   }
 
   .descriptionInput {
-      font-size: 12px;
-      padding: 8px;
+    font-size: 12px;
+    padding: 8px;
   }
 
   .editorToolbar {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
 
   .editorToolbar button {
-      font-size: 14px;
+    font-size: 14px;
   }
 }

@@ -108,7 +108,6 @@ section {
 /*==============================Navbar==============================*/
 nav {
   display: flex;
-  /* Changed to flex for easier alignment */
   justify-content: space-between;
   align-items: center;
   position: fixed;
@@ -122,7 +121,6 @@ nav {
   align-items: center;
   width: 100%;
   padding: 1rem;
-  /* Added padding for spacing */
   gap: 6rem;
   box-shadow: 0 8px 16px -8px rgba(0, 0, 0, 0.2);
 
@@ -145,7 +143,6 @@ nav {
 
 .profile_avatar {
   margin-left: auto;
-  /* Pushes the avatar to the right */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -163,7 +160,6 @@ nav {
 }
 
 /*==============================REGISTER AND FORM STYLE==============================*/
-/* Base styles */
 .form {
   display: flex;
   flex-direction: column;
@@ -199,7 +195,8 @@ input {
   align-items: center;
   margin: 1.5rem 0;
 }
-.register small{
+
+.register small {
   margin-top: 1rem;
 }
 
@@ -228,7 +225,7 @@ input {
 
 .user-role {
   display: flex;
-  justify-content:space-around;
+  justify-content: space-around;
   margin-bottom: 10px;
 }
 
@@ -242,7 +239,7 @@ input {
 }
 
 
-.class-selection select{
+.class-selection select {
   width: 80%;
   display: flex;
   justify-content: center;
@@ -254,12 +251,7 @@ input {
   color: rgb(116, 116, 116);
 }
 
-
-
-/* Responsive styles */
 /*==============================MEDIA QUERIES==============================*/
-
-
 
 @media screen and (max-width: 800px) {
   .btn {
@@ -349,10 +341,10 @@ input {
     margin-left: 10rem;
   }
 
-  .class-selection select{
+  .class-selection select {
     width: 70%;
   }
- 
+
 }
 
 
@@ -376,19 +368,19 @@ input {
     font-size: 0.7rem;
   }
 }
+
 @media screen and (min-width: 900px) {
-  .class-selection select{
+  .class-selection select {
     width: 50%;
   }
 }
+
 @media screen and (min-width: 800px) {
-  .class-selection select{
+  .class-selection select {
     width: 50%;
   }
 }
 
-
-/* Large devices (min-width: 1200px) */
 @media (min-width: 1200px) {
   .register-img {
     width: 15rem;
@@ -409,7 +401,8 @@ input {
     width: 12rem;
     font-size: 0.85rem;
   }
-  .class-selection select{
+
+  .class-selection select {
     width: 80%;
   }
 }

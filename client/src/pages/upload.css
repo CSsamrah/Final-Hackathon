@@ -49,10 +49,9 @@
     margin-right: 30px;
 }
 
-/* Media Queries */
 @media (max-width: 1200px) {
     .mainUpload {
-        flex-direction: column-reverse; /* Switch order */
+        flex-direction: column-reverse;
         align-items: center;
         margin-left: 0;
         margin-right: 0;
@@ -81,10 +80,9 @@
     }
 }
 
-/* For screens up to 800px wide */
 @media (max-width: 800px) {
     .mainUpload {
-        flex-direction: column-reverse; /* Switch order */
+        flex-direction: column-reverse;
         align-items: center;
         margin-left: 0;
         margin-right: 0;

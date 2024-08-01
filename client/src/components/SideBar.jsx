@@ -61,7 +61,7 @@ export default function Sidebar() {
             </FormControl>
 
             <FormControl variant="outlined" className="form-control">
-                
+
                 <TextField
                     type="date"
                     value={dueDate}
@@ -72,8 +72,7 @@ export default function Sidebar() {
             </FormControl>
 
             <FormControl variant="outlined" className="form-control">
-                {/* <InputLabel>Topic</InputLabel> */}
-                <TextField 
+                <TextField
                     placeholder="Topic"
                     id="fullWidth"
                     multiline

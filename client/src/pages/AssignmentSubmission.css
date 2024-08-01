@@ -121,44 +121,44 @@ hr {
 
 @media screen and (max-width: 800px) {
     .mainAssignDiv {
-        display: block; /* Adjust to block layout for small screens */
+        display: block;
         width: 100%;
     }
 
     .your-work {
-        margin: 0 auto; /* Center the element */
+        margin: 0 auto;
         width: 100%;
     }
 
     .header1 {
-        position: relative; /* Adjust position if needed */
+        position: relative;
     }
 
     .content2 {
-        padding: 2rem; /* Adjust padding for smaller screens */
+        padding: 2rem;
         width: 100%;
     }
 }
 
 @media screen and (max-width: 1200px) {
     .mainAssignDiv {
-        display: block; /* Adjust to block layout for small screens */
+        display: block;
         width: 100%;
     }
 
     .your-work {
-        margin: 0 auto; /* Center the element */
+        margin: 0 auto;
         width: 100%;
     }
 
     .header1 {
-        position: relative; /* Adjust position if needed */
+        position: relative;
     }
 
     .content2 {
-        padding: 2rem; /* Adjust padding for smaller screens */
+        padding: 2rem;
         width: 100%;
     }
 
-    
+
 }

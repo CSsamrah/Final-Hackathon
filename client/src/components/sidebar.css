@@ -22,32 +22,28 @@
     background-color: #0056b3;
 }
 
-/* Media Queries */
-
-/* For screens up to 1200px wide */
 @media (max-width: 1200px) {
     .sidebar {
-        width: 100%; /* Full width on small screens */
+        width: 100%;
         margin-right: 0;
-        margin-bottom: 20px; /* Add space below sidebar for layout */
-        padding: 10px; /* Further reduce padding */
+        margin-bottom: 20px;
+        padding: 10px;
     }
 
     .sidebar .rubric-button {
-        padding: 8px; /* Further reduce padding for smaller buttons */
+        padding: 8px;
     }
 }
 
-/* For screens up to 800px wide */
 @media (max-width: 800px) {
     .sidebar {
-        width: 100%; /* Full width on small screens */
+        width: 100%;
         margin-right: 0;
-        margin-bottom: 20px; /* Add space below sidebar for layout */
-        padding: 10px; /* Further reduce padding */
+        margin-bottom: 20px;
+        padding: 10px;
     }
 
     .sidebar .rubric-button {
-        padding: 8px; /* Further reduce padding for smaller buttons */
+        padding: 8px;
     }
 }

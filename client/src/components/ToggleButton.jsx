@@ -8,7 +8,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 export default function ToggleButtonsMultiple() {
-  const [formats, setFormats] = React.useState(() => ['bold', 'italic',"underlined","color"]);
+  const [formats, setFormats] = React.useState(() => ['bold', 'italic', "underlined", "color"]);
 
   const handleFormat = (event, newFormats) => {
     setFormats(newFormats);

@@ -7,18 +7,14 @@ const AssignmentSubmission = () => {
     const location = useLocation();
 
     useEffect(() => {
-        // Force reflow on mount
         const handleResize = () => {
             window.dispatchEvent(new Event('resize'));
         };
 
-        // Trigger resize event on mount
         handleResize();
 
-        // Add resize event listener
         window.addEventListener('resize', handleResize);
 
-        // Clean up event listener on component unmount
         return () => {
             window.removeEventListener('resize', handleResize);
         };

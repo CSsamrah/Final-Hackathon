@@ -20,7 +20,7 @@ const Login = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8000/api/login', { // Adjust the URL based on your API setup
+      const response = await fetch('http://localhost:8000/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,10 +31,8 @@ const Login = () => {
       const result = await response.json();
 
       if (response.ok) {
-        // Handle successful login (e.g., redirect to dashboard)
         navigate('/dashboard');
       } else {
-        // Handle errors (e.g., show error message)
         setError(result.msg || 'An error occurred');
       }
     } catch (error) {

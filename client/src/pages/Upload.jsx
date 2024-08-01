@@ -20,7 +20,7 @@ export default function Upload() {
             <div className="header2">
                 <div className="icondiv">
                     <button className='crossBtn'>
-                        <Link to="/teacherdashboard"><AiOutlineClose/></Link>
+                        <Link to="/teacherdashboard"><AiOutlineClose /></Link>
                     </button>
                     <AssignmentIcon />
                     <h1>Assignment</h1>
