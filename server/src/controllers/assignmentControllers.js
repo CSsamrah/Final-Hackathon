@@ -1,5 +1,6 @@
 const Assignment=require('../models/Assignment')
 const Student=require('../models/Student')
+const Register=require('../models/Registration')
 const {createSubmission}=require('../services/studentServices')
 const Teacher = require('../models/Teacher'); 
 const {createAssign}=require('../services/teacherService')
@@ -26,15 +27,15 @@ const submitAssignment = async (req, res) => {
     }
 
     try {
-        const student = await Student.findOne({ email });
+        const student = await Register.findOne({ email });
         if (!student) return res.status(404).send('Student not found.');
-        const studentId = student.studentId;
+        const studentId = student._id;
 
         const assignment = await Assignment.findOne({ topic });
         if (!assignment) return res.status(404).send('Assignment not found.');
         const assignmentId = assignment._id;
 
-        const blob = bucket.file(file.originalname);
+        const blob = bucket.file(`${Date.now()}_${file.originalname}`);
         const blobStream = blob.createWriteStream({ metadata: { contentType: file.mimetype } });
 
         blobStream.on('error', (err) => res.status(500).send(err));
@@ -57,18 +58,18 @@ const submitAssignment = async (req, res) => {
 
 const createAssignment = async (req, res) => {
     try {
-        const {classTeaches,points,topic,title, description, dueDate } = req.body;
+        const { classTeaches, points, topic, title, description, dueDate, courseName } = req.body;
         const file = req.file;
 
         if (!file) {
             return res.status(400).send('No file uploaded.');
         }
 
-        // // Ensure teacher exists
-        // const teacher = await Teacher.findById(teacherId);
-        // if (!teacher) {
-        //     return res.status(404).send('Teacher not found.');
-        // }
+        // Convert points to a number
+        const pointsNumber = Number(points);
+        if (isNaN(pointsNumber)) {
+            return res.status(400).send('Points must be a number.');
+        }
 
         // Upload file to Firebase Storage
         const blob = bucket.file(`${Date.now()}_${file.originalname}`); // Add timestamp to avoid overwriting
@@ -87,7 +88,16 @@ const createAssignment = async (req, res) => {
             const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
 
             try {
-                const assignment = await createAssign(classTeaches,topic,points,title, description, dueDate, publicUrl);
+                const assignment = await createAssign(
+                    classTeaches,
+                    pointsNumber,
+                    topic,
+                    title,
+                    description,
+                    dueDate,
+                    publicUrl,
+                    courseName
+                );
                 res.status(200).send({ message: 'Assignment uploaded successfully', fileUrl: publicUrl });
             } catch (error) {
                 res.status(500).send({ message: error.message });
