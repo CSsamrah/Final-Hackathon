@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import LinkIcon from '@mui/icons-material/Link';
-import './fileLinkUploader.css'; // Import the CSS file
+import './fileLinkUploader.css';
 
 export default function FileLinkUploader() {
     const [showLinkInput, setShowLinkInput] = useState(false);
@@ -23,7 +23,6 @@ export default function FileLinkUploader() {
         const file = event.target.files[0];
         if (file) {
             console.log(`File selected: ${file.name}`);
-            // Handle file upload logic here
         }
     };
 

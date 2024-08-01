@@ -8,8 +8,8 @@ const Register = () => {
     email: '',
     password: '',
     password2: '',
-    role: '', // Added role
-    class: '' // Added class
+    role: '',
+    class: ''
   });
   const [error, setError] = useState(null);
   const navigate = useNavigate();

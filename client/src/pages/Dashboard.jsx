@@ -37,7 +37,7 @@ const AssignmentsPage = () => {
   return (
     <div style={{ padding: '20px' }}>
       <Typography variant="h4" gutterBottom style={{ fontWeight: 'bolder', padding: '10px 20px' }}>
-        Current Assignments 
+        Current Assignments
       </Typography>
       <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
         <Button variant="outlined" startIcon={<FilterList />} style={{ border: 'none', padding: '10px 20px' }}>
@@ -52,12 +52,12 @@ const AssignmentsPage = () => {
           value={searchTerm}
           onChange={handleSearchChange}
           sx={{ ml: 'auto' }}
-          style={{ border: 'none', padding: '10px 20px' }}/>
+          style={{ border: 'none', padding: '10px 20px' }} />
       </Stack>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
-            <TableRow style={{ background: '#bfd3e0'}}>
+            <TableRow style={{ background: '#bfd3e0' }}>
               <TableCell>Id</TableCell>
               <TableCell>Assignment</TableCell>
               <TableCell>Deadline</TableCell>
@@ -71,7 +71,7 @@ const AssignmentsPage = () => {
                 <TableCell>{assignment.name}</TableCell>
                 <TableCell>{assignment.deadline}</TableCell>
                 <TableCell>
-                  <Button variant="contained" style={{ background:"white", color:"#0D6DB7" , border: "none", boxShadow:"none", fontWeight: "bold"}}>
+                  <Button variant="contained" style={{ background: "white", color: "#0D6DB7", border: "none", boxShadow: "none", fontWeight: "bold" }}>
                     <Link to="/assignmentsubmission">{assignment.submit}</Link>
                   </Button>
                 </TableCell>
@@ -91,7 +91,7 @@ const Dashboard = () => {
         <Header className='header' />
         <AssignmentsPage />
       </div>
-      
+
     </>
   );
 };

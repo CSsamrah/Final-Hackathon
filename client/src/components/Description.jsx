@@ -2,14 +2,12 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import Input from '@mui/material/Input';
 import TextField from '@mui/material/TextField';
-import './description.css'; // Import the CSS file
+import './description.css';
 import Button from '@mui/material/Button';
 import ToggleButtonsMultiple from './ToggleButton';
 import FileLinkUploader from './UploadLink';
 
 const ariaLabel = { 'aria-label': 'description' };
-
-
 
 export default function Description() {
     return (
@@ -36,7 +34,7 @@ export default function Description() {
                 />
             </Box>
             <div className="editorToolbar">
-            <ToggleButtonsMultiple /> <FileLinkUploader />
+                <ToggleButtonsMultiple /> <FileLinkUploader />
             </div>
         </div>
     );

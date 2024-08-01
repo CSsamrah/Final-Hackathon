@@ -113,10 +113,10 @@ const AssignmentsPage = () => {
                   </Select>
                 </TableCell>
                 <TableCell>
-                  <Button 
-                    variant="contained" style={{ background:"white", color:"#0D6DB7" , border: "none", boxShadow:"none", fontWeight: "bold"}}
-                    href={assignment.fileUrl} 
-                    target="_blank" 
+                  <Button
+                    variant="contained" style={{ background: "white", color: "#0D6DB7", border: "none", boxShadow: "none", fontWeight: "bold" }}
+                    href={assignment.fileUrl}
+                    target="_blank"
                     rel="noopener noreferrer"
                   >
                     View
