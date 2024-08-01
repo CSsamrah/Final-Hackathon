@@ -17,7 +17,7 @@ const signupUser = async (req, res) => {
 
         if (user.email) {
             // Generate JWT token
-            token = jwt.sign({ email: user.email }, jwtSecret, {
+            token = jwt.sign({ email: user.email,role: user.role  }, jwtSecret, {
                 expiresIn: 86400 // expires in 24 hours
             });
 
