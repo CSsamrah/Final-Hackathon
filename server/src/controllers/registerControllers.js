@@ -1,6 +1,7 @@
 const { createUser, findUserByEmail } = require('../services/user')
 const User=require('../models/Registration')
-
+const createStudent=require("../services/studentServices")
+const createTeacher=require("../services/teacherService")
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -11,14 +12,12 @@ const signupUser = async (req, res) => {
     let token = null;
 
     try {
-        // Hash the password before saving the user
         data.password = bcrypt.hashSync(data.password, 8);
         const user = await createUser(data);
 
-        if (user.email) {
-            // Generate JWT token
-            token = jwt.sign({ email: user.email,role: user.role  }, jwtSecret, {
-                expiresIn: 86400 // expires in 24 hours
+        if (user && user.email) {
+            token = jwt.sign({ email: user.email, role: user.role }, jwtSecret, {
+                expiresIn: 86400 // 24 hours
             });
 
             res.status(201).send({ token: token, email: user.email, msg: 'Successfully signed up' });
