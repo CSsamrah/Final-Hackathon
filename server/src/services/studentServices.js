@@ -22,7 +22,7 @@ const createStudent = async (registrationId, name, studentClass) => {
     try {
         const newStudent = new Student({
             name,
-            studentId: registrationId, // Use the ObjectId from the Registration entry
+            studentId: registrationId,
             class: studentClass
         });
 

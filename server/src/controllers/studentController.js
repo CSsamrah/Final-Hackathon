@@ -7,7 +7,7 @@ const getCurrentAssignments = async (req, res) => {
         const { studentId } = req.params; 
 
        
-        const student = await Student.findById(studentId);
+        const student = await Student.findOne({ studentId: studentId });
         if (!student) {
             return res.status(404).json({ message: 'Student not found' });
         }
@@ -45,25 +45,68 @@ const getFailedAssignments = async (req, res) => {
 
     try {
        
-        const student = await Student.findById(studentId);
+        const student = await Student.findOne({studentId:studentId});
         if (!student) {
             return res.status(404).json({ message: "Student not found" });
         }
-
         const assignments = await Assignment.find({ class: student.class });
 
         const submissions = await Submission.find({ studentId });
 
         const submittedAssignmentIds = submissions.map(submission => submission.assignmentId.toString());
 
-        const failedAssignments = assignments.filter(assignment => !submittedAssignmentIds.includes(assignment._id.toString()));
-
+        // Filter assignments where the student has not submitted and the due date has passed
+        const failedAssignments = assignments.filter(assignment => 
+            !submittedAssignmentIds.includes(assignment._id.toString()) &&
+            new Date(assignment.dueDate) < new Date()
+        );
         res.status(200).json(failedAssignments);
     } catch (error) {
         res.status(500).json({ message: "Failed to fetch failed assignments", error });
     }
 };
 
+const getLeaderboard = async (req, res) => {
+    try {
+        // Fetch all submissions
+        const submissions = await Submission.find();
+
+        // Create a map to store the highest marks for each student
+        const studentMarksMap = new Map();
+
+        submissions.forEach(submission => {
+            const studentId = submission.studentId.toString();
+            const marks = submission.marks;
+
+            if (!studentMarksMap.has(studentId) || studentMarksMap.get(studentId) < marks) {
+                studentMarksMap.set(studentId, marks);
+            }
+        });
+
+        // Convert the map to an array of objects
+        const leaderboard = [];
+        for (const [studentId, marks] of studentMarksMap) {
+            const student = await Student.findById(studentId);
+            if (student) {
+                leaderboard.push({
+                    studentId,
+                    studentName: student.name,
+                    marks
+                });
+            }
+        }
+
+        // Sort the leaderboard by marks in descending order
+        leaderboard.sort((a, b) => b.marks - a.marks);
+
+        // Return the leaderboard
+        res.status(200).json(leaderboard);
+    } catch (error) {
+        // Handle errors and send appropriate response
+        res.status(500).json({ message: "Failed to fetch leaderboard", error });
+    }
+};
+
 module.exports={
-    getCurrentAssignments,getSubmittedAssignments,getFailedAssignments
+    getCurrentAssignments,getSubmittedAssignments,getFailedAssignments,getLeaderboard
 }

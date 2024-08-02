@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const SubmissionSchema = new mongoose.Schema({
-    studentId: { type: Schema.Types.ObjectId, ref: 'Student', required: true },
+    studentId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     assignmentId: { type: Schema.Types.ObjectId, ref: 'Assignment', required: true },
     submissionDate: { type: Date, required: true },
     marks: { type: Number, default: 0 },

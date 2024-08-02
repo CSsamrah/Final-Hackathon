@@ -1,11 +1,13 @@
 const User=require('../models/Registration')
-const createStudent=require('./studentServices')
-const createTeacher=require('./teacherService')
+const {createStudent}=require('../services/studentServices')
+const {createTeacher}=require('../services/teacherService')
+
+console.log('createStudent:', createStudent); // This should log the function definition
+console.log('createTeacher:', createTeacher);
 
 
 const createUser = async (data) => {
-    try {
-        // Save the common registration details
+    try {    
         const user = new User(data);
         await user.save();
 
@@ -13,7 +15,7 @@ const createUser = async (data) => {
         if (data.role === 'student') {
             await createStudent(user._id, data.name, data.class);
         } else if (data.role === 'teacher') {
-            await createTeacher(user._id, data.name, data.classTeaches, data.email);
+            await createTeacher(user._id, data.name, data.class, data.email);
         } else {
             throw new Error('Invalid role');
         }
