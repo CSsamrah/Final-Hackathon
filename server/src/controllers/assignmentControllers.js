@@ -1,9 +1,10 @@
 const Assignment=require('../models/Assignment')
-const Student=require('../models/Student')
+const Submission=require('../models/Submission')
 const Register=require('../models/Registration')
 const {createSubmission}=require('../services/studentServices')
 const Teacher = require('../models/Teacher'); 
 const {createAssign}=require('../services/teacherService')
+const mongoose = require('mongoose');
 
 
 var admin = require("firebase-admin");
@@ -35,8 +36,10 @@ const submitAssignment = async (req, res) => {
         if (!assignment) return res.status(404).send('Assignment not found.');
         const assignmentId = assignment._id;
 
-        const blob = bucket.file(`${Date.now()}_${file.originalname}`);
-        const blobStream = blob.createWriteStream({ metadata: { contentType: file.mimetype } });
+        const blob = bucket.file(`submissions/${Date.now()}_${file.originalname}`);
+        const blobStream = blob.createWriteStream({
+            metadata: { contentType: file.mimetype }
+        });
 
         blobStream.on('error', (err) => res.status(500).send(err));
 
@@ -65,28 +68,20 @@ const createAssignment = async (req, res) => {
             return res.status(400).send('No file uploaded.');
         }
 
-        // Convert points to a number
         const pointsNumber = Number(points);
         if (isNaN(pointsNumber)) {
             return res.status(400).send('Points must be a number.');
         }
 
-        // Upload file to Firebase Storage
-        const blob = bucket.file(`${Date.now()}_${file.originalname}`); // Add timestamp to avoid overwriting
+        const blob = bucket.file(`assignments/${Date.now()}_${file.originalname}`);
         const blobStream = blob.createWriteStream({
-            metadata: {
-                contentType: file.mimetype
-            }
+            metadata: { contentType: file.mimetype }
         });
 
-        blobStream.on('error', (err) => {
-            return res.status(500).send(err);
-        });
+        blobStream.on('error', (err) => res.status(500).send(err));
 
         blobStream.on('finish', async () => {
-            // Get the public URL for the file
             const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
-
             try {
                 const assignment = await createAssign(
                     classTeaches,
@@ -110,6 +105,31 @@ const createAssignment = async (req, res) => {
     }
 };
 
+
+const getAssignmentUrl = async (req, res) => {
+    const { submissionId } = req.params;
+  
+    if (!submissionId || !mongoose.Types.ObjectId.isValid(submissionId)) {
+      return res.status(400).json({ message: 'Invalid submission ID' });
+    }
+  
+    try {
+      const submission = await Submission.findById(submissionId);
+  
+      if (!submission) {
+        console.error(`Submission with ID ${submissionId} not found.`);
+        return res.status(404).json({ message: 'Submission not found' });
+      }
+  
+      const filePath = submission.file;
+  
+      res.status(200).json({ url: filePath });
+    } catch (error) {
+      console.error('Error fetching assignment URL:', error);
+      res.status(500).json({ message: 'Failed to fetch assignment URL', error: error.message });
+    }
+  };
+
 module.exports={
-    submitAssignment,createAssignment
+    submitAssignment,createAssignment,getAssignmentUrl
 }

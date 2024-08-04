@@ -1,4 +1,6 @@
 const User=require('../models/Registration')
+const Teacher=require('../models/Teacher')
+const Student=require('../models/Student')
 const {createStudent}=require('../services/studentServices')
 const {createTeacher}=require('../services/teacherService')
 
@@ -35,6 +37,24 @@ const findUserByEmail = async (email) => {
     }
 };
 
+const findTeacherByUserId = async (userId) => {
+    try {
+        const teacher = await Teacher.findOne({ teacherId: userId });
+        return teacher;
+    } catch (error) {
+        throw error;
+    }
+};
+
+const findStudentByUserId = async (userId) => {
+    try {
+        const student = await Student.findOne({ studentId: userId });
+        return student;
+    } catch (error) {
+        throw error;
+    }
+};
+
 module.exports={
-    createUser,findUserByEmail
+    createUser,findUserByEmail,findStudentByUserId,findTeacherByUserId
 }

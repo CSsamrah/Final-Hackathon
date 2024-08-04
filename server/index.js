@@ -1,8 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const userRoutes=require('./src/routes/mainRoutes')
-
+const userRoutes = require('./src/routes/mainRoutes');
 const port = 8000;
 const app = express();
 
