@@ -19,13 +19,13 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard/:studentId" element={<Dashboard />} />
         <Route path="/upload" element={<Upload />} />
         <Route path="/submitted" element={<Submitted />} />
         <Route path="/failed" element={<Failed />} />
         <Route path="/leaderboard" element={<LeaderBoard />} />
         <Route path="/assignmentsubmission" element={<AssignmentSubmission />} />
-        <Route path="/teacherdashboard" element={<TeacherDashboard />} />
+        <Route path="/teacherdashboard/:teacherId" element={<TeacherDashboard />} />
         <Route path="/failedStudents" element={<FailedStudents />} />
         <Route path='/teacherLeaderboard' element={<TeacherLeaderboard />} />
       </Routes>

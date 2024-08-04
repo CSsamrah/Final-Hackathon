@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import TeacherNavbar from '../components/TeacherNavbar';
 import {
   Table,
@@ -12,44 +13,116 @@ import {
   TextField,
   Stack,
   Typography,
-  Select,
-  MenuItem,
 } from '@mui/material';
 import { FilterList, GetApp } from '@mui/icons-material';
 
-const initialAssignments = [
-  { id: 1, student: 'John Doe', assignment: 'Assignment 1', marks: '86/100', status: 'Good', fileUrl: '/path/to/assignment1.pdf' },
-  { id: 2, student: 'Jane Smith', assignment: 'Assignment 2', marks: '96/100', status: 'Excellent', fileUrl: '/path/to/assignment2.pdf' },
-  { id: 3, student: 'Sam Brown', assignment: 'Assignment 3', marks: '60/100', status: 'Average', fileUrl: '/path/to/assignment3.pdf' },
-];
-
-const AssignmentsPage = () => {
+const AssignmentsPage = ({ teacherId }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [assignments, setAssignments] = useState(initialAssignments);
+  const [assignments, setAssignments] = useState([]);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/api/studentsSubmitted/${teacherId}`);
+        const result = await response.json();
+
+        if (response.ok) {
+          setAssignments(result);
+        } else {
+          setError(result.message || 'Failed to fetch assignments');
+        }
+      } catch (error) {
+        setError('An unexpected error occurred.');
+      }
+    };
+
+    fetchAssignments();
+  }, [teacherId]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  const handleMarksChange = (id, value) => {
-    setAssignments((prevAssignments) =>
-      prevAssignments.map((assignment) =>
-        assignment.id === id ? { ...assignment, marks: value } : assignment
-      )
-    );
+  const handleMarksChange = async (submissionId, value) => {
+    console.log("Updating marks for ID:", submissionId); // Debugging log
+    try {
+      const response = await fetch(`http://localhost:8000/api/marks/${submissionId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ marks: value }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setAssignments((prevAssignments) =>
+          prevAssignments.map((assignment) =>
+            assignment.submissionId === submissionId ? { ...assignment, marks: value } : assignment
+          )
+        );
+      } else {
+        setError(result.message || 'Failed to update marks');
+      }
+    } catch (error) {
+      setError('An unexpected error occurred.');
+    }
   };
 
-  const handleStatusChange = (id, value) => {
-    setAssignments((prevAssignments) =>
-      prevAssignments.map((assignment) =>
-        assignment.id === id ? { ...assignment, status: value } : assignment
-      )
-    );
+  const handleStatusChange = async (submissionId, value) => {
+    console.log("Updating remarks for ID:", submissionId); // Debugging log
+    try {
+      const response = await fetch(`http://localhost:8000/api/remarks/${submissionId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ remarks: value }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setAssignments((prevAssignments) =>
+          prevAssignments.map((assignment) =>
+            assignment.submissionId === submissionId ? { ...assignment, remarks: value } : assignment
+          )
+        );
+      } else {
+        setError(result.message || 'Failed to update remarks');
+      }
+    } catch (error) {
+      setError('An unexpected error occurred.');
+    }
+  };
+
+  const handleViewAssignment = async (submissionId) => {
+    console.log("Viewing assignment for submission ID:", submissionId); // Debugging log
+    if (!submissionId) {
+      setError('Submission ID is not defined');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/getAssignment/${submissionId}`);
+      const result = await response.json();
+
+      if (response.ok) {
+        const encodedUrl = encodeURI(result.url);
+        window.open(encodedUrl, '_blank');
+      } else {
+        setError(result.message || 'Failed to fetch assignment URL');
+      }
+    } catch (error) {
+      setError('An unexpected error occurred.');
+    }
   };
 
   const filteredAssignments = assignments.filter((assignment) =>
-    assignment.student.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    assignment.assignment.toLowerCase().includes(searchTerm.toLowerCase())
+    assignment.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    assignment.assignmentTitle.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -72,52 +145,48 @@ const AssignmentsPage = () => {
           sx={{ ml: 'auto', padding: '10px 20px' }}
         />
       </Stack>
+      {error && <Typography color="error">{error}</Typography>}
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow sx={{ background: '#bfd3e0' }}>
-              <TableCell>#</TableCell>
+              <TableCell>No.</TableCell>
               <TableCell>Students</TableCell>
               <TableCell>Assignment</TableCell>
+              <TableCell>Total Marks</TableCell>
               <TableCell>Marks</TableCell>
-              <TableCell>Status</TableCell>
+              <TableCell>Remarks</TableCell>
               <TableCell>View Assignment</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredAssignments.map((assignment) => (
-              <TableRow key={assignment.id}>
-                <TableCell>{assignment.id}</TableCell>
-                <TableCell>{assignment.student}</TableCell>
-                <TableCell>{assignment.assignment}</TableCell>
+            {filteredAssignments.map((assignment,index) => (
+              <TableRow key={assignment.submissionId}>
+                <TableCell>{index + 1}</TableCell> 
+                <TableCell>{assignment.studentName}</TableCell>
+                <TableCell>{assignment.assignmentTitle}</TableCell>
+                <TableCell>{assignment.totalMarks}</TableCell>
                 <TableCell>
                   <TextField
                     variant="outlined"
                     value={assignment.marks}
-                    onChange={(e) => handleMarksChange(assignment.id, e.target.value)}
+                    onChange={(e) => handleMarksChange(assignment.submissionId, e.target.value)}
                     size="small"
                   />
                 </TableCell>
                 <TableCell>
-                  <Select
-                    value={assignment.status}
-                    onChange={(e) => handleStatusChange(assignment.id, e.target.value)}
+                  <TextField
                     variant="outlined"
+                    value={assignment.remarks}
+                    onChange={(e) => handleStatusChange(assignment.submissionId, e.target.value)}
                     size="small"
-                    fullWidth
-                  >
-                    <MenuItem value="Excellent">Excellent</MenuItem>
-                    <MenuItem value="Good">Good</MenuItem>
-                    <MenuItem value="Average">Average</MenuItem>
-                    <MenuItem value="Poor">Poor</MenuItem>
-                  </Select>
+                  />
                 </TableCell>
                 <TableCell>
                   <Button
-                    variant="contained" style={{ background: "white", color: "#0D6DB7", border: "none", boxShadow: "none", fontWeight: "bold" }}
-                    href={assignment.fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    variant="contained"
+                    style={{ background: "white", color: "#0D6DB7", border: "none", boxShadow: "none", fontWeight: "bold" }}
+                    onClick={() => handleViewAssignment(assignment.submissionId)}
                   >
                     View
                   </Button>
@@ -132,10 +201,12 @@ const AssignmentsPage = () => {
 };
 
 const TeacherDashboard = () => {
+  const { teacherId } = useParams();
+
   return (
     <div className='TeacherDashboard'>
       <TeacherNavbar />
-      <AssignmentsPage />
+      <AssignmentsPage teacherId={teacherId} />
     </div>
   );
 };
