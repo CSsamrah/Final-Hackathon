@@ -7,7 +7,7 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import LinkIcon from '@mui/icons-material/Link';
 import './fileLinkUploader.css';
 
-export default function FileLinkUploader() {
+export default function FileLinkUploader({ handleFileChange }) {
     const [showLinkInput, setShowLinkInput] = useState(false);
     const [link, setLink] = useState('');
 
@@ -17,13 +17,6 @@ export default function FileLinkUploader() {
 
     const handleLinkChange = (event) => {
         setLink(event.target.value);
-    };
-
-    const handleFileUpload = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            console.log(`File selected: ${file.name}`);
-        }
     };
 
     return (
@@ -39,7 +32,7 @@ export default function FileLinkUploader() {
                     <input
                         type="file"
                         hidden
-                        onChange={handleFileUpload}
+                        onChange={handleFileChange}
                     />
                 </Button>
             </Box>
