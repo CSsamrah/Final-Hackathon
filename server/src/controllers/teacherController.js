@@ -114,6 +114,7 @@ const getFailedAssignmentsForClass = async (req, res) => {
 
         // Convert the map to an array, filtering out assignments with no students who failed to submit
         const result = Object.values(failedAssignmentsMap).filter(assignment => assignment.studentsNotSubmitted.length > 0);
+        console.log(result)
 
         res.status(200).json(result);
     } catch (error) {

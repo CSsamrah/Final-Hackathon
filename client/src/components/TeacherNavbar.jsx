@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Logo from '../images/logo.png';
 import { FaBars } from 'react-icons/fa';
 import { AiOutlineClose } from 'react-icons/ai';
@@ -10,8 +10,8 @@ import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
 
-
 const TeacherNavbar = () => {
+  const { teacherId } = useParams();
   const [isNavShowing, setIsNavShowing] = useState(window.innerWidth > 800 ? true : false);
 
   const closeNavHandler = () => {
@@ -31,17 +31,18 @@ const TeacherNavbar = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
   return (
     <div className='Nav-container nav_container'>
-      <Link to="/" className="nav_logo" onClick={closeNavHandler}>
+      <Link to={`/teacherdashboard/${teacherId}`} className="nav_logo" onClick={closeNavHandler}>
         <img src={Logo} alt="Navbar Logo" />
       </Link>
       {isNavShowing && (
         <ul className='nav_menu'>
-          <li><Link to="/teacherdashboard" onClick={closeNavHandler}>Submitted</Link></li>
-          <li><Link to="/failedStudents" onClick={closeNavHandler}>Failed</Link></li>
-          <li><Link to="/teacherLeaderboard" onClick={closeNavHandler}>Leaderboard</Link></li>
-          <li><Link to="/upload" onClick={closeNavHandler}>Upload</Link></li>
+          <li><Link to={`/teacherdashboard/${teacherId}`} onClick={closeNavHandler}>Submitted</Link></li>
+          <li><Link to={`/failedStudents/${teacherId}`} onClick={closeNavHandler}>Failed</Link></li>
+          <li><Link to={`/leaderboard/${teacherId}`} onClick={closeNavHandler}>Leaderboard</Link></li>
+          <li><Link to={`/upload/${teacherId}`} onClick={closeNavHandler}>Upload</Link></li>
           <li className='profile_avatar'>
             <Stack direction="row" spacing={2} alignItems="center">
               <Avatar>H</Avatar>

@@ -9,7 +9,7 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-route
 import Upload from './pages/Upload';
 import AssignmentSubmission from './pages/AssignmentSubmission';
 import TeacherDashboard from './pages/TeacherDashboard';
-import FailedStudents from './pages/FailedStudents';
+import FailedAssignments from './pages/FailedStudents';
 import TeacherLeaderboard from './pages/TeacherLeaderboard';
 
 
@@ -20,14 +20,14 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Register />} />
         <Route path="/dashboard/:studentId" element={<Dashboard />} />
-        <Route path="/upload" element={<Upload />} />
+        <Route path="/upload/:teacherId" element={<Upload />} />
         <Route path="/submitted" element={<Submitted />} />
         <Route path="/failed" element={<Failed />} />
         <Route path="/leaderboard" element={<LeaderBoard />} />
         <Route path="/assignmentsubmission" element={<AssignmentSubmission />} />
         <Route path="/teacherdashboard/:teacherId" element={<TeacherDashboard />} />
-        <Route path="/failedStudents" element={<FailedStudents />} />
-        <Route path='/teacherLeaderboard' element={<TeacherLeaderboard />} />
+        <Route path="/failedStudents/:teacherId" element={<FailedAssignments />} />
+        <Route path='/teacherLeaderboard/:teacherId' element={<TeacherLeaderboard />} />
       </Routes>
     </div>
   );

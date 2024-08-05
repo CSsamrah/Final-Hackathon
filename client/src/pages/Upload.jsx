@@ -7,10 +7,13 @@ import Sidebar from '../components/SideBar';
 import FileLinkUploader from '../components/UploadLink';
 import { AiOutlineClose } from 'react-icons/ai';
 import { Link, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 
+   
 
 export default function Upload() {
+    const { teacherId } = useParams();
     const handleAssign = () => {
         alert('Assignment assigned to students!');
     };
@@ -20,7 +23,7 @@ export default function Upload() {
             <div className="header2">
                 <div className="icondiv">
                     <button className='crossBtn'>
-                        <Link to="/teacherdashboard"><AiOutlineClose /></Link>
+                        <Link to={`/teacherdashboard/${teacherId}`}><AiOutlineClose /></Link>
                     </button>
                     <AssignmentIcon />
                     <h1>Assignment</h1>
