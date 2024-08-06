@@ -15,7 +15,7 @@ const createUser = async (data) => {
 
         // Create the corresponding student or teacher document based on the role
         if (data.role === 'student') {
-            await createStudent(user._id, data.name, data.class);
+            await createStudent(user._id, data.name, data.class,data.email);
         } else if (data.role === 'teacher') {
             await createTeacher(user._id, data.name, data.class, data.email);
         } else {

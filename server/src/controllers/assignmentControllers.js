@@ -3,6 +3,7 @@ const Submission=require('../models/Submission')
 const Register=require('../models/Registration')
 const {createSubmission}=require('../services/studentServices')
 const Teacher = require('../models/Teacher'); 
+const Student=require('../models/Student')
 const {createAssign}=require('../services/teacherService')
 const mongoose = require('mongoose');
 
@@ -20,20 +21,19 @@ var bucket = admin.storage().bucket();
 
 // submit assignment 
 const submitAssignment = async (req, res) => {
-    const { email, topic } = req.body;
+    const { studentId, title } = req.body;
     const file = req.file;
 
     if (!file) {
-        return res.status(400).send('No file uploaded.');
+        return res.status(400).json({ message: 'No file uploaded.' });
     }
 
     try {
-        const student = await Register.findOne({ email });
-        if (!student) return res.status(404).send('Student not found.');
-        const studentId = student._id;
+        const student = await Student.findById(studentId);
+        if (!student) return res.status(404).json({ message: 'Student not found.' });
 
-        const assignment = await Assignment.findOne({ topic });
-        if (!assignment) return res.status(404).send('Assignment not found.');
+        const assignment = await Assignment.findOne({ title });
+        if (!assignment) return res.status(404).json({ message: 'Assignment not found.' });
         const assignmentId = assignment._id;
 
         const blob = bucket.file(`submissions/${Date.now()}_${file.originalname}`);
@@ -41,23 +41,24 @@ const submitAssignment = async (req, res) => {
             metadata: { contentType: file.mimetype }
         });
 
-        blobStream.on('error', (err) => res.status(500).send(err));
+        blobStream.on('error', (err) => res.status(500).json({ message: 'Error uploading file', error: err }));
 
         blobStream.on('finish', async () => {
             const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
             try {
                 await createSubmission(studentId, assignmentId, publicUrl);
-                res.status(200).send({ message: 'Assignment submitted successfully', fileUrl: publicUrl });
+                res.status(200).json({ message: 'Assignment submitted successfully', fileUrl: publicUrl });
             } catch (error) {
-                res.status(500).send({ message: 'Error submitting assignment', error: error.message });
+                res.status(500).json({ message: 'Error submitting assignment', error: error.message });
             }
         });
 
         blobStream.end(file.buffer);
     } catch (error) {
-        res.status(500).send(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
 
 const createAssignment = async (req, res) => {
     try {

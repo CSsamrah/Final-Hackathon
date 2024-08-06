@@ -1,51 +1,110 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import './AssignmentSubmission.css';
-import { AiOutlineClose } from 'react-icons/ai';
-import { Link, useLocation } from 'react-router-dom';
+import { AiOutlineClose, AiOutlineDelete } from 'react-icons/ai';
 
 const AssignmentSubmission = () => {
-    const location = useLocation();
+    const { studentId, assignmentId } = useParams();
+    const [assignment, setAssignment] = useState(null);
+    const [error, setError] = useState(null);
+    const [file, setFile] = useState(null);
+    const [message, setMessage] = useState('');
+    const [fileUrl, setFileUrl] = useState('');
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
-        const handleResize = () => {
-            window.dispatchEvent(new Event('resize'));
+        const fetchAssignment = async () => {
+            try {
+                const response = await fetch(`http://localhost:8000/api/particular/${assignmentId}`);
+                if (!response.ok) {
+                    throw new Error('Assignment not found');
+                }
+                const data = await response.json();
+                setAssignment(data);
+            } catch (error) {
+                setError(error.message);
+            }
         };
 
-        handleResize();
+        fetchAssignment();
+    }, [assignmentId]);
 
-        window.addEventListener('resize', handleResize);
+    const handleFileChange = (event) => {
+        setFile(event.target.files[0]);
+    };
 
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, [location]);
+    const handleFileDelete = () => {
+        setFile(null);
+        setFileUrl('');
+        fileInputRef.current.value = null;
+    };
+
+    const handleButtonClick = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        if (!file) {
+            setMessage('Please select a file to upload.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('studentId', studentId);
+        formData.append('title', assignment.title);
+
+        try {
+            const response = await fetch('http://localhost:8000/api/submit', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const contentType = response.headers.get('content-type');
+            let result;
+            if (contentType && contentType.indexOf('application/json') !== -1) {
+                result = await response.json();
+            } else {
+                result = await response.text();
+            }
+
+            if (response.ok) {
+                setMessage(result.message || result);
+                setFileUrl(result.fileUrl);
+            } else {
+                setMessage(result.message || 'Error submitting assignment');
+            }
+        } catch (error) {
+            setMessage('Error submitting assignment: ' + error.message);
+        }
+    };
+
+    if (error) return <p>Error: {error}</p>;
+    if (!assignment) return <p>Loading...</p>;
 
     return (
-        <div className='mainAssignDiv' key={location.pathname}>
+        <div className='mainAssignDiv'>
             <div className="assignment-submission">
                 <div className="header1">
                     <button className='crossBtn'>
-                        <Link to="/dashboard"><AiOutlineClose /></Link>
+                        <Link to={`/dashboard/${studentId}`}><AiOutlineClose /></Link>
                     </button>
                     <h2 className='headH1'>Assignment Submission</h2>
                 </div>
                 <div className="content2">
-                    <h3>Intro to React</h3>
+                    <h3>{assignment.title}</h3>
                     <div className='mainP'>
                         <div className='p1'>
-                            <p className='name'>Alina Waseem</p>
-                            <p className='points'>100 Points</p>
+                            <p className='points'>{assignment.points} Points</p>
                         </div>
                         <div className='p2'>
-                            <p className='dueDate'>Due: May 15, 2023</p>
+                            <p className='dueDate'>Due: {new Date(assignment.dueDate).toLocaleDateString()}</p>
                         </div>
                     </div>
                     <hr />
                     <div className="description">
-                        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Explicabo distinctio quis repellendus maiores quasi natus unde,
-                        exercitationem ducimus quod temporibus iste sapiente, eius nemo quam in quo! Amet expedita similique earum, explicabo quos
-                        minus doloribus quisquam assumenda repellendus? Iusto, tenetur doloremque! Enim consequatur itaque ipsam laboriosam!
-                        Accusantium neque nesciunt quidem.
+                        {assignment.description}
                     </div>
                 </div>
             </div>
@@ -55,9 +114,31 @@ const AssignmentSubmission = () => {
                     <p className="status">Missing</p>
                 </div>
                 <div className='assignBtn'>
-                    <button className="add-or-create">ADD OR CREATE</button>
-                    <button className="mark-as-done">MARK AS DONE</button>
+                    <form onSubmit={handleSubmit}>
+                        <button type="button" className="add-or-create" onClick={handleButtonClick}>ADD OR CREATE</button>
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            style={{ display: 'none' }}
+                            onChange={handleFileChange}
+                        />
+                        {file && (
+                            <div className="file-info">
+                                <span>{file.name}</span>
+                                <button type="button" className="delete-file" onClick={handleFileDelete}>
+                                    <AiOutlineDelete />
+                                </button>
+                            </div>
+                        )}
+                        <button type="submit" className="mark-as-done">MARK AS DONE</button>
+                    </form>
                 </div>
+                {fileUrl && (
+                    <div className="submitted-file">
+                        <p>Submitted File: <a href={fileUrl} target="_blank" rel="noopener noreferrer">{fileUrl}</a></p>
+                    </div>
+                )}
+                {message && <p>{message}</p>}
             </div>
         </div>
     );

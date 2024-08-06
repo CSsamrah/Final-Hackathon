@@ -7,7 +7,7 @@ const getCurrentAssignments = async (req, res) => {
         const { studentId } = req.params; 
 
        
-        const student = await Student.findOne({ studentId: studentId });
+        const student = await Student.findById(studentId);
         if (!student) {
             return res.status(404).json({ message: 'Student not found' });
         }
@@ -107,6 +107,31 @@ const getLeaderboard = async (req, res) => {
     }
 };
 
+const getParticularAssignment = async (req, res) => {
+    const { assignmentId } = req.params;
+    console.log(`Received request for assignment ID: ${assignmentId}`);
+
+    try {
+        const assignment = await Assignment.findById(assignmentId);
+        console.log(`Assignment found: ${assignment}`);
+
+        if (!assignment) {
+            console.log(`Assignment not found with ID: ${assignmentId}`);
+            return res.status(404).json({ message: 'Assignment not found' });
+        }
+
+        res.status(200).json({
+            title: assignment.title,
+            description: assignment.description,
+            dueDate: assignment.dueDate,
+            points:assignment.points
+        });
+    } catch (error) {
+        console.error(`Error retrieving assignment: ${error.message}`);
+        res.status(500).json({ message: 'Error retrieving assignment', error: error.message });
+    }
+};
+
 module.exports={
-    getCurrentAssignments,getSubmittedAssignments,getFailedAssignments,getLeaderboard
+    getCurrentAssignments,getSubmittedAssignments,getFailedAssignments,getLeaderboard,getParticularAssignment
 }

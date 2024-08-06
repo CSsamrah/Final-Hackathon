@@ -21,10 +21,10 @@ function App() {
         <Route path="/signup" element={<Register />} />
         <Route path="/dashboard/:studentId" element={<Dashboard />} />
         <Route path="/upload/:teacherId" element={<Upload />} />
-        <Route path="/submitted" element={<Submitted />} />
-        <Route path="/failed" element={<Failed />} />
-        <Route path="/leaderboard" element={<LeaderBoard />} />
-        <Route path="/assignmentsubmission" element={<AssignmentSubmission />} />
+        <Route path="/submitted/:studentId" element={<Submitted />} />
+        <Route path="/failed/:studentId" element={<Failed />} />
+        <Route path="/leaderboard/:studentId" element={<LeaderBoard />} />
+        <Route path="/assignmentsubmission/:studentId/:assignmentId" element={<AssignmentSubmission />} />
         <Route path="/teacherdashboard/:teacherId" element={<TeacherDashboard />} />
         <Route path="/failedStudents/:teacherId" element={<FailedAssignments />} />
         <Route path='/teacherLeaderboard/:teacherId' element={<TeacherLeaderboard />} />

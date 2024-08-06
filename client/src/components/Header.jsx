@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams} from 'react-router-dom';
 import Logo from '../images/logo.png';
 import { FaBars } from 'react-icons/fa';
 import { AiOutlineClose } from 'react-icons/ai';
@@ -13,6 +13,7 @@ import IconButton from '@mui/material/IconButton';
 
 
 const Header = () => {
+  const { studentId } = useParams();
   const [isNavShowing, setIsNavShowing] = useState(window.innerWidth > 800 ? true : false);
 
   const closeNavHandler = () => {
@@ -39,10 +40,10 @@ const Header = () => {
       </Link>
       {isNavShowing && (
         <ul className='nav_menu'>
-          <li><Link to="/dashboard" onClick={closeNavHandler}>Current</Link></li>
-          <li><Link to="/submitted" onClick={closeNavHandler}>Submitted</Link></li>
-          <li><Link to="/failed" onClick={closeNavHandler}>Failed</Link></li>
-          <li><Link to="/leaderboard" onClick={closeNavHandler}>Leaderboard</Link></li>
+          <li><Link to={`/dashboard/${studentId}`} onClick={closeNavHandler}>Current</Link></li>
+          <li><Link to={`/submitted/${studentId}`} onClick={closeNavHandler}>Submitted</Link></li>
+          <li><Link to={`/failed/${studentId}`} onClick={closeNavHandler}>Failed</Link></li>
+          <li><Link to={`/leaderboard/${studentId}`} onClick={closeNavHandler}>Leaderboard</Link></li>
           <li className='profile_avatar'>
             <Stack direction="row" spacing={2} alignItems="center">
               <Avatar>H</Avatar>

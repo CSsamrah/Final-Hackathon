@@ -18,12 +18,13 @@ const createSubmission = async (studentId, assignmentId, fileUrl) => {
     }
 };
 
-const createStudent = async (registrationId, name, studentClass) => {
+const createStudent = async (registrationId, name, studentClass,email) => {
     try {
         const newStudent = new Student({
             name,
             studentId: registrationId,
-            class: studentClass
+            class: studentClass,
+            email
         });
 
         const savedStudent = await newStudent.save();

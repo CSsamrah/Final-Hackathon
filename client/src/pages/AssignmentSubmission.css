@@ -91,11 +91,12 @@ hr {
 .mark-as-done {
     display: block;
     color: white;
-    padding: 10px;
+    padding: 10px 15px;
     margin: 5px 0;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
+    font-weight: 600;
 }
 
 .mark-as-done {
