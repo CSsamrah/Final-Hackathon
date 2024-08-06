@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import {
   Table,
@@ -14,29 +14,54 @@ import {
   Typography,
 } from '@mui/material';
 import { FilterList, GetApp } from '@mui/icons-material';
+import { useParams } from 'react-router-dom';
 
-const assignments = [
-  { id: 1, course: 'Introduction to Programming', assignment: 'Assignment 1', marks: '86/100', status: 'Good' },
-  { id: 2, course: 'Data Structures and Algorithms', assignment: 'Assignment 2', marks: '96/100', status: 'Excellent' },
-  { id: 3, course: 'Web Development Fundamentals', assignment: 'Assignment 3', marks: '60/100', status: 'Average' },
-];
-
-const AssignmentsPage = () => {
+const AssignmentsPage = ({ studentId }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [assignments, setAssignments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/api/submitted/${studentId}`); 
+        if (!response.ok) {
+          throw new Error('Failed to fetch assignments');
+        }
+        const data = await response.json();
+        console.log('Fetched Assignments:', data); // Inspect the structure of the data
+        setAssignments(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (studentId) {
+      fetchAssignments();
+    }
+  }, [studentId]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  const filteredAssignments = assignments.filter((assignment) =>
-    assignment.course.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    assignment.assignment.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredAssignments = assignments.filter((assignment) => {
+    const courseName = assignment.assignmentId?.courseName?.toLowerCase() || '';
+    const title = assignment.assignmentId?.title?.toLowerCase() || '';
+    const searchTermLower = searchTerm.toLowerCase();
+    return courseName.includes(searchTermLower) || title.includes(searchTermLower);
+  });
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div style={{ padding: '20px' }}>
       <Typography variant="h4" gutterBottom style={{ fontWeight: 'bolder', padding: '10px 20px' }}>
-        Submitted Assignment
+        Submitted Assignments
       </Typography>
       <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
         <Button variant="outlined" startIcon={<FilterList />} style={{ border: 'none', padding: '10px 20px' }}>
@@ -62,17 +87,21 @@ const AssignmentsPage = () => {
               <TableCell>Assignment</TableCell>
               <TableCell>Marks</TableCell>
               <TableCell>Status</TableCell>
+              <TableCell>File</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredAssignments.map((assignment) => (
-              <TableRow key={assignment.id}>
-                <TableCell>{assignment.id}</TableCell>
-                <TableCell>{assignment.course}</TableCell>
-                <TableCell>{assignment.assignment}</TableCell>
+            {filteredAssignments.map((assignment, index) => (
+              <TableRow key={assignment._id}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{assignment.assignmentId.courseName}</TableCell>
+                <TableCell>{assignment.assignmentId.title}</TableCell>
                 <TableCell>{assignment.marks}</TableCell>
                 <TableCell>
                   <span className={assignment.status.toLowerCase()}>{assignment.status}</span>
+                </TableCell>
+                <TableCell>
+                  <a href={assignment.file} target="_blank" rel="noopener noreferrer">View File</a>
                 </TableCell>
               </TableRow>
             ))}
@@ -84,13 +113,14 @@ const AssignmentsPage = () => {
 };
 
 const Submitted = () => {
+  const { studentId } = useParams();
+  console.log('Student ID:', studentId); // Check if this logs the correct ID
   return (
     <>
       <div className='Submitted'>
         <Header className='header' />
-        <AssignmentsPage />
+        <AssignmentsPage studentId={studentId} />
       </div>
-
     </>
   );
 };
