@@ -9,7 +9,9 @@ const AssignmentSubmission = () => {
     const [error, setError] = useState(null);
     const [file, setFile] = useState(null);
     const [message, setMessage] = useState('');
+    const [submittedFileName, setSubmittedFileName] = useState(''); // Store file name
     const [fileUrl, setFileUrl] = useState('');
+    const [isSubmitted, setIsSubmitted] = useState(false); // New state variable
     const fileInputRef = useRef(null);
 
     useEffect(() => {
@@ -71,12 +73,20 @@ const AssignmentSubmission = () => {
 
             if (response.ok) {
                 setMessage(result.message || result);
-                setFileUrl(result.fileUrl);
+                setSubmittedFileName(file.name); // Set file name on successful submission
+                setFileUrl(result.fileUrl); // Store file URL for viewing
+                setIsSubmitted(true); // Set to true on successful submission
             } else {
                 setMessage(result.message || 'Error submitting assignment');
             }
         } catch (error) {
             setMessage('Error submitting assignment: ' + error.message);
+        }
+    };
+
+    const handleViewFile = () => {
+        if (fileUrl) {
+            window.open(fileUrl, '_blank', 'noopener,noreferrer');
         }
     };
 
@@ -111,34 +121,43 @@ const AssignmentSubmission = () => {
             <div className="your-work">
                 <div className='work1'>
                     <h3>Your work</h3>
-                    <p className="status">Missing</p>
+                    <p className={`status ${isSubmitted ? 'status-submitted' : 'status-missing'}`}>
+                        {isSubmitted ? 'Submitted' : 'Missing'}
+                    </p>
                 </div>
                 <div className='assignBtn'>
-                    <form onSubmit={handleSubmit}>
-                        <button type="button" className="add-or-create" onClick={handleButtonClick}>ADD OR CREATE</button>
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            style={{ display: 'none' }}
-                            onChange={handleFileChange}
-                        />
-                        {file && (
-                            <div className="file-info">
-                                <span>{file.name}</span>
-                                <button type="button" className="delete-file" onClick={handleFileDelete}>
-                                    <AiOutlineDelete />
-                                </button>
-                            </div>
-                        )}
-                        <button type="submit" className="mark-as-done">MARK AS DONE</button>
-                    </form>
+                    {!isSubmitted && (
+                        <>
+                            <button type="button" className="add-or-create" onClick={handleButtonClick}>ADD OR CREATE</button>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                style={{ display: 'none' }}
+                                onChange={handleFileChange}
+                            />
+                        </>
+                    )}
+                    {!isSubmitted && file && (
+                        <div className={`file-info ${!isSubmitted ? '' : 'no-buttons'}`}>
+                            <span>{file.name}</span>
+                            <button type="button" className="delete-file" onClick={handleFileDelete}>
+                                <AiOutlineDelete />
+                            </button>
+                        </div>
+                    )}
+                    {!isSubmitted && (
+                        <button type="button" className="mark-as-done" onClick={handleSubmit}>SUBMIT</button>
+                    )}
                 </div>
-                {fileUrl && (
+                {isSubmitted && submittedFileName && (
                     <div className="submitted-file">
-                        <p>Submitted File: <a href={fileUrl} target="_blank" rel="noopener noreferrer">{fileUrl}</a></p>
+                        <p>
+                            <button type="button" onClick={handleViewFile} className="view-file-btn">
+                                {submittedFileName}
+                            </button>
+                        </p>
                     </div>
                 )}
-                {message && <p>{message}</p>}
             </div>
         </div>
     );

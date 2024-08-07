@@ -10,7 +10,7 @@ import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
 
-const TeacherNavbar = () => {
+const TeacherNavbar = ({ teacherName }) => {
   const { teacherId } = useParams();
   const [isNavShowing, setIsNavShowing] = useState(window.innerWidth > 800 ? true : false);
 
@@ -32,6 +32,9 @@ const TeacherNavbar = () => {
     setAnchorEl(null);
   };
 
+  // Get the first character of the teacherName
+  const avatarInitial = teacherName ? teacherName.charAt(0).toUpperCase() : '';
+
   return (
     <div className='Nav-container nav_container'>
       <Link to={`/teacherdashboard/${teacherId}`} className="nav_logo" onClick={closeNavHandler}>
@@ -41,11 +44,11 @@ const TeacherNavbar = () => {
         <ul className='nav_menu'>
           <li><Link to={`/teacherdashboard/${teacherId}`} onClick={closeNavHandler}>Submitted</Link></li>
           <li><Link to={`/failedStudents/${teacherId}`} onClick={closeNavHandler}>Failed</Link></li>
-          <li><Link to={`/leaderboard/${teacherId}`} onClick={closeNavHandler}>Leaderboard</Link></li>
+          <li><Link to={`/teacherleaderboard/${teacherId}`} onClick={closeNavHandler}>Leaderboard</Link></li>
           <li><Link to={`/upload/${teacherId}`} onClick={closeNavHandler}>Upload</Link></li>
           <li className='profile_avatar'>
             <Stack direction="row" spacing={2} alignItems="center">
-              <Avatar>H</Avatar>
+              <Avatar>{avatarInitial}</Avatar>
               <div className='selectClass'>
                 <IconButton
                   aria-controls="simple-menu"
@@ -73,6 +76,6 @@ const TeacherNavbar = () => {
       </button>
     </div>
   );
-}
+};
 
 export default TeacherNavbar;

@@ -67,6 +67,7 @@ hr {
     padding: 1.5rem;
     box-shadow: 0 8px 8px 8px rgba(75, 75, 75, 0.1);
     margin-right: 5rem;
+    margin-top: 5rem;
 }
 
 .work1 {
@@ -76,8 +77,15 @@ hr {
 }
 
 .status {
-    color: rgb(201, 26, 26);
     font-weight: bold;
+}
+
+.status-missing {
+    color: rgb(201, 26, 26);
+}
+
+.status-submitted {
+    color: #8DC63F;
 }
 
 .assignBtn {
@@ -97,6 +105,7 @@ hr {
     cursor: pointer;
     font-size: 0.8rem;
     font-weight: 600;
+    width: 15rem;
 }
 
 .mark-as-done {
@@ -120,6 +129,41 @@ hr {
     cursor: pointer;
 }
 
+.submitted-file {
+    display: flex;
+    margin: 5px 0;
+    background-color: #f1f1f1;
+    padding: 10px 10px;
+    border-radius: 4px;
+    width: 15rem;
+
+}
+
+.file-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 0;
+    background-color: #f1f1f1;
+    padding: 10px 15px;
+    border-radius: 4px;
+    width: 15rem;
+
+}
+
+.delete-file {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: rgb(201, 26, 26);
+    font-size: 1.2rem;
+}
+
+.view-file-btn {
+    font-size: medium;
+    cursor: pointer;
+}
+
 @media screen and (max-width: 800px) {
     .mainAssignDiv {
         display: block;
@@ -138,6 +182,19 @@ hr {
     .content2 {
         padding: 2rem;
         width: 100%;
+    }
+
+    .add-or-create,
+    .mark-as-done {
+        width: 20rem;
+    }
+
+    .file-info {
+        width: 20rem;
+    }
+
+    .submitted-file {
+        width: 20rem;
     }
 }
 
@@ -161,5 +218,16 @@ hr {
         width: 100%;
     }
 
+    .add-or-create,
+    .mark-as-done {
+        width: 20rem;
+    }
 
+    .file-info {
+        width: 20rem;
+    }
+
+    .submitted-file {
+        width: 20rem;
+    }
 }
