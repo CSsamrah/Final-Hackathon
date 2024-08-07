@@ -3,13 +3,11 @@ import Box from '@mui/material/Box';
 import Input from '@mui/material/Input';
 import TextField from '@mui/material/TextField';
 import './description.css';
-import Button from '@mui/material/Button';
 import ToggleButtonsMultiple from './ToggleButton';
 import FileLinkUploader from './UploadLink';
+import { AiOutlineClose } from 'react-icons/ai';
 
-const ariaLabel = { 'aria-label': 'description' };
-
-export default function Description() {
+export default function Description({ handleInputChange, handleFileChange, selectedFile, handleRemoveFile }) {
     return (
         <div className='mainDescription'>
             <Box
@@ -18,7 +16,7 @@ export default function Description() {
                 autoComplete="off"
                 className="formBox"
             >
-                <Input placeholder="Title" inputProps={ariaLabel} className="titleInput" />
+                <Input placeholder="Title" inputProps={{ 'aria-label': 'description' }} className="titleInput" name="title" onChange={handleInputChange} />
             </Box>
             <Box
                 className="descriptionBox"
@@ -31,11 +29,22 @@ export default function Description() {
                     rows={4}
                     variant="outlined"
                     className="descriptionInput"
+                    name="description"
+                    onChange={handleInputChange}
                 />
             </Box>
             <div className="editorToolbar">
-                <ToggleButtonsMultiple /> <FileLinkUploader />
+                <ToggleButtonsMultiple /> 
+                <FileLinkUploader handleFileChange={handleFileChange} />
             </div>
+            {selectedFile && (
+                <div className="selectedFile">
+                    <span>{selectedFile.name}</span>
+                    <button className="removeFileButton" onClick={handleRemoveFile}>
+                        <AiOutlineClose />
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

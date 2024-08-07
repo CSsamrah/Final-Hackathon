@@ -31,14 +31,18 @@ const Login = () => {
       const result = await response.json();
 
       if (response.ok) {
-        navigate('/dashboard');
+        if (result.role ==="teacher") {
+          navigate(`/teacherdashboard/${result.userId}`);
+        } else {
+          navigate(`/dashboard/${result.userId}`);
+        }
       } else {
         setError(result.msg || 'An error occurred');
       }
     } catch (error) {
       setError('An unexpected error occurred.');
     }
-  }
+  };
 
   return (
     <section className='login'>

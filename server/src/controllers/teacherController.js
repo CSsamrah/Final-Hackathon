@@ -28,8 +28,8 @@ const getSubmittedAssignmentsForClass = async (req, res) => {
             .populate('studentId')
             .populate('assignmentId');
         
-            console.log('Assignments:', assignments);
-            console.log('Submissions:', submissions);
+            // console.log('Assignments:', assignments);
+            // console.log('Submissions:', submissions);
 
         if (!submissions || submissions.length === 0) {
             return res.status(200).json({ message: 'No submissions found for these assignments' });
@@ -37,10 +37,12 @@ const getSubmittedAssignmentsForClass = async (req, res) => {
 
         // Step 4: Extract relevant student and assignment information
         const result = submissions.map(submission => ({
+            submissionId: submission._id, 
             studentId: submission.studentId ? submission.studentId._id : 'Unknown',
             studentName: submission.studentId ? submission.studentId.name : 'Unknown',
             assignmentId: submission.assignmentId ? submission.assignmentId._id : 'Unknown',
             assignmentTitle: submission.assignmentId ? submission.assignmentId.title : 'Unknown',
+            totalMarks: submission.assignmentId ? submission.assignmentId.points : 'Unknown',
             submissionDate: submission.submissionDate,
             marks: submission.marks,
             remarks: submission.remarks
@@ -112,6 +114,7 @@ const getFailedAssignmentsForClass = async (req, res) => {
 
         // Convert the map to an array, filtering out assignments with no students who failed to submit
         const result = Object.values(failedAssignmentsMap).filter(assignment => assignment.studentsNotSubmitted.length > 0);
+        console.log(result)
 
         res.status(200).json(result);
     } catch (error) {
@@ -119,6 +122,50 @@ const getFailedAssignmentsForClass = async (req, res) => {
         res.status(500).json({ message: "Failed to fetch failed assignments", error: error.message || error });
     }
 };
+
+const updateMarks = async (req, res) => {
+    const { submissionId } = req.params;
+    const { marks } = req.body;
+
+    try {
+        // Find the submission by ID and update marks
+        const updatedSubmission = await Submission.findByIdAndUpdate(
+            submissionId,
+            { marks },
+            { new: true }
+        );
+
+        if (!updatedSubmission) {
+            return res.status(404).json({ message: 'Submission not found' });
+        }
+
+        res.status(200).json({ message: 'Marks updated successfully', submission: updatedSubmission });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to update marks', error: error.message });
+    }
+};
+
+const updateRemarks = async (req, res) => {
+    const { submissionId } = req.params;
+    const { remarks } = req.body;
+
+    try {
+        // Find the submission by ID and update remarks
+        const updatedSubmission = await Submission.findByIdAndUpdate(
+            submissionId,
+            { remarks },
+            { new: true }
+        );
+
+        if (!updatedSubmission) {
+            return res.status(404).json({ message: 'Submission not found' });
+        }
+
+        res.status(200).json({ message: 'Remarks updated successfully', submission: updatedSubmission });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to update remarks', error: error.message });
+    }
+};
 module.exports = {
-    getSubmittedAssignmentsForClass,getFailedAssignmentsForClass
+    getSubmittedAssignmentsForClass,getFailedAssignmentsForClass,updateMarks,updateRemarks
 };

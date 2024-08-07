@@ -48,6 +48,31 @@
     margin-left: 5px;
     margin-right: 30px;
 }
+/* upload.css */
+.selectedFile {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.selectedFile span {
+    flex-grow: 1;
+}
+
+.removeFileButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 10px;
+    color: red;
+    font-size: 16px;
+}
+
 
 @media (max-width: 1200px) {
     .mainUpload {
