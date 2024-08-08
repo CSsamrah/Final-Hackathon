@@ -4,6 +4,7 @@ const Teacher=require('../models/Teacher')
 const Student=require('../models/Student')
 const createStudent=require("../services/studentServices")
 const createTeacher=require("../services/teacherService")
+const authentication=require("../middleware/auth")
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -48,7 +49,7 @@ const loginUser = async (req, res) => {
         const authenticated = bcrypt.compareSync(password, user.password);
         if (authenticated) {
             const token = jwt.sign({ email: user.email, role: user.role }, jwtSecret, {
-                expiresIn: '24h' // expires in 24 hours
+                expiresIn: 86400 // expires in 24 hours
             });
 
             let response = {
@@ -75,8 +76,15 @@ const loginUser = async (req, res) => {
         res.status(500).send({ msg: 'An error occurred while processing your request.' });
     }
 };
+const logout= async (req, res) => {
+    const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  res.status(200).json({ message: 'Logged out successfully' });
+};
+
 
 module.exports={
     loginUser,
-    signupUser
+    signupUser,logout
 }
