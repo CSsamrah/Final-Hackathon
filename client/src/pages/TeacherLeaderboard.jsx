@@ -102,7 +102,7 @@ const AssignmentsWithLeaderboard = ({ teacherId }) => {
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{assignment.title}</TableCell>
                 <TableCell>
-                  <Button sx={{background: '#5e9bc1', color:'white'}} onClick={() => handleViewLeaderboard(assignment._id, assignment.title)}>View Leaderboard</Button>
+                  <Button sx={{background: '#5e9bc1', color: 'white', '&:hover': { background: '#4a8ab7', color: '#e0e0e0'}}} onClick={() => handleViewLeaderboard(assignment._id, assignment.title)}>View Leaderboard</Button>
                 </TableCell>
               </TableRow>
             ))}
