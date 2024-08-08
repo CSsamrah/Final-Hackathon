@@ -58,6 +58,11 @@ const TeacherNavbar = ({ name }) => {
       if (response.ok) {
         localStorage.removeItem('token'); // Remove token from local storage
         navigate('/'); // Redirect to login page
+
+        window.history.pushState(null, '', window.location.href);
+        window.onpopstate = function () {
+        navigate('/');
+      }
       } else {
         const result = await response.json();
         console.error('Logout failed:', result.message);

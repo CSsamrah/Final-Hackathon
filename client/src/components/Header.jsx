@@ -53,7 +53,12 @@ const Header = ({ userName }) => {
       if (response.ok) {
         localStorage.removeItem('token'); // Remove the token from storage
         navigate('/'); // Redirect to the login page
-      } else {
+
+        window.history.pushState(null, '', window.location.href);
+        window.onpopstate = function () {
+        navigate('/');
+      }}
+       else {
         const result = await response.json();
         console.error('Logout failed:', result.message);
         alert(`Logout failed: ${result.message || 'Unknown error'}`);

@@ -11,6 +11,7 @@ import AssignmentSubmission from './pages/AssignmentSubmission';
 import TeacherDashboard from './pages/TeacherDashboard';
 import FailedAssignments from './pages/FailedStudents';
 import TeacherLeaderboard from './pages/TeacherLeaderboard';
+import ProtectedRoute from './components/ProtectedRoute'; 
 
 
 function App() {
@@ -19,15 +20,15 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Register />} />
-        <Route path="/dashboard/:studentId" element={<Dashboard />} />
-        <Route path="/upload/:teacherId" element={<Upload />} />
-        <Route path="/submitted/:studentId" element={<Submitted />} />
-        <Route path="/failed/:studentId" element={<Failed />} />
-        <Route path="/leaderboard/:studentId" element={<LeaderBoard />} />
-        <Route path="/assignmentsubmission/:studentId/:assignmentId" element={<AssignmentSubmission />} />
-        <Route path="/teacherdashboard/:teacherId" element={<TeacherDashboard />} />
-        <Route path="/failedStudents/:teacherId" element={<FailedAssignments />} />
-        <Route path='/teacherLeaderboard/:teacherId' element={<TeacherLeaderboard />} />
+        <Route path="/dashboard/:studentId" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/upload/:teacherId" element={<ProtectedRoute><Upload /></ProtectedRoute>} />
+        <Route path="/submitted/:studentId" element={<ProtectedRoute><Submitted /></ProtectedRoute>} />
+        <Route path="/failed/:studentId" element={<ProtectedRoute><Failed /></ProtectedRoute>} />
+        <Route path="/leaderboard/:studentId" element={<ProtectedRoute><LeaderBoard /></ProtectedRoute>} />
+        <Route path="/assignmentsubmission/:studentId/:assignmentId" element={<ProtectedRoute><AssignmentSubmission /></ProtectedRoute>} />
+        <Route path="/teacherdashboard/:teacherId" element={<ProtectedRoute><TeacherDashboard /></ProtectedRoute>} />
+        <Route path="/failedStudents/:teacherId" element={<ProtectedRoute><FailedAssignments /></ProtectedRoute>} />
+        <Route path='/teacherLeaderboard/:teacherId' element={<ProtectedRoute><TeacherLeaderboard /></ProtectedRoute>} />
       </Routes>
     </div>
   );
