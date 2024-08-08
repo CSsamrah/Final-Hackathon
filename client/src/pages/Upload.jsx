@@ -21,8 +21,10 @@ export default function Upload() {
         courseName: '', // Add any other fields needed
     });
     const [selectedFile, setSelectedFile] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const handleAssign = async () => {
+        setLoading(true); // Set loading state to true
         const data = new FormData();
         for (const key in formData) {
             data.append(key, formData[key]);
@@ -35,6 +37,7 @@ export default function Upload() {
             });
 
             const result = await response.json();
+            setLoading(false); // Set loading state to false
             if (response.ok) {
                 alert('Assignment assigned to students!');
                 console.log(result);
@@ -42,7 +45,9 @@ export default function Upload() {
                 alert('Error: ' + result.message);
             }
         } catch (error) {
+            setLoading(false); // Set loading state to false
             console.error('Error:', error);
+            alert('Error: ' + error.message);
         }
     };
 
@@ -82,7 +87,7 @@ export default function Upload() {
                     <h1>Assignment</h1>
                 </div>
                 <Button variant="contained" className="assign-button" onClick={handleAssign}>
-                    Assign
+                {loading ? 'Uploading...' : 'Assign'}
                 </Button>
             </div>
             <div className="mainUpload">

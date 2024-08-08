@@ -28,8 +28,8 @@ const getSubmittedAssignmentsForClass = async (req, res) => {
             .populate('studentId')
             .populate('assignmentId');
         
-            // console.log('Assignments:', assignments);
-            // console.log('Submissions:', submissions);
+            console.log('Assignments:', assignments);
+            console.log('Submissions:', submissions);
 
         if (!submissions || submissions.length === 0) {
             return res.status(200).json({ message: 'No submissions found for these assignments' });

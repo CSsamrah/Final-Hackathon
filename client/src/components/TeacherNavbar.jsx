@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import Logo from '../images/logo.png';
 import { FaBars } from 'react-icons/fa';
 import { AiOutlineClose } from 'react-icons/ai';
@@ -10,9 +10,16 @@ import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
 
-const TeacherNavbar = ({ teacherName }) => {
+const TeacherNavbar = ({ name }) => {
   const { teacherId } = useParams();
+  const navigate = useNavigate();
   const [isNavShowing, setIsNavShowing] = useState(window.innerWidth > 800 ? true : false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [currentTeacherName, setCurrentTeacherName] = useState(name);
+
+  useEffect(() => {
+    setCurrentTeacherName(name);
+  }, [name]);
 
   const closeNavHandler = () => {
     if (window.innerWidth < 800) {
@@ -22,8 +29,6 @@ const TeacherNavbar = ({ teacherName }) => {
     }
   };
 
-  const [anchorEl, setAnchorEl] = useState(null);
-
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -32,8 +37,40 @@ const TeacherNavbar = ({ teacherName }) => {
     setAnchorEl(null);
   };
 
+  const handleLogout = async () => {
+    const token = localStorage.getItem('token'); // Retrieve token from local storage
+
+    if (!token) {
+      alert('No token found. Please log in again.');
+      navigate('/'); // Redirect to login page
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:8000/api/logout', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        localStorage.removeItem('token'); // Remove token from local storage
+        navigate('/'); // Redirect to login page
+      } else {
+        const result = await response.json();
+        console.error('Logout failed:', result.message);
+        alert('Logout failed: ' + (result.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred during logout. Please try again later.');
+    }
+  };
+
   // Get the first character of the teacherName
-  const avatarInitial = teacherName ? teacherName.charAt(0).toUpperCase() : '';
+  const avatarInitial = currentTeacherName ? currentTeacherName.charAt(0).toUpperCase() : '';
 
   return (
     <div className='Nav-container nav_container'>
@@ -64,7 +101,9 @@ const TeacherNavbar = ({ teacherName }) => {
                   open={Boolean(anchorEl)}
                   onClose={handleClose}
                 >
-                  <MenuItem onClick={handleClose}><Link to={"/"}>Logout</Link></MenuItem>
+                  <MenuItem onClick={() => { handleClose(); handleLogout(); }}>
+                    Logout
+                  </MenuItem>
                 </Menu>
               </div>
             </Stack>

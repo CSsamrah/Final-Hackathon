@@ -9,9 +9,10 @@ const AssignmentSubmission = () => {
     const [error, setError] = useState(null);
     const [file, setFile] = useState(null);
     const [message, setMessage] = useState('');
-    const [submittedFileName, setSubmittedFileName] = useState(''); // Store file name
+    const [submittedFileName, setSubmittedFileName] = useState('');
     const [fileUrl, setFileUrl] = useState('');
-    const [isSubmitted, setIsSubmitted] = useState(false); // New state variable
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [loading, setLoading] = useState(false); // Loading state
     const fileInputRef = useRef(null);
 
     useEffect(() => {
@@ -52,6 +53,8 @@ const AssignmentSubmission = () => {
             return;
         }
 
+        setLoading(true); // Set loading state to true
+
         const formData = new FormData();
         formData.append('file', file);
         formData.append('studentId', studentId);
@@ -73,14 +76,16 @@ const AssignmentSubmission = () => {
 
             if (response.ok) {
                 setMessage(result.message || result);
-                setSubmittedFileName(file.name); // Set file name on successful submission
-                setFileUrl(result.fileUrl); // Store file URL for viewing
-                setIsSubmitted(true); // Set to true on successful submission
+                setSubmittedFileName(file.name);
+                setFileUrl(result.fileUrl);
+                setIsSubmitted(true);
             } else {
                 setMessage(result.message || 'Error submitting assignment');
             }
         } catch (error) {
             setMessage('Error submitting assignment: ' + error.message);
+        } finally {
+            setLoading(false); // Set loading state to false
         }
     };
 
@@ -146,7 +151,9 @@ const AssignmentSubmission = () => {
                         </div>
                     )}
                     {!isSubmitted && (
-                        <button type="button" className="mark-as-done" onClick={handleSubmit}>SUBMIT</button>
+                        <button type="button" className="mark-as-done" onClick={handleSubmit}>
+                            {loading ? 'Submitting...' : 'SUBMIT'}
+                        </button>
                     )}
                 </div>
                 {isSubmitted && submittedFileName && (

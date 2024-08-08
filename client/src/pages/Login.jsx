@@ -31,6 +31,7 @@ const Login = () => {
       const result = await response.json();
 
       if (response.ok) {
+        localStorage.setItem('token', result.token);
         if (result.role ==="teacher") {
           navigate(`/teacherdashboard/${result.userId}`);
         } else {
