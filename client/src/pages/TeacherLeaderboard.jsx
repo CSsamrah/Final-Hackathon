@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import TeacherNavbar from '../components/TeacherNavbar';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   Table,
   TableBody,
@@ -11,30 +11,72 @@ import {
   TextField,
   Stack,
   Typography,
+  Button,
+  Modal,
+  Box
 } from '@mui/material';
-import { FilterList, GetApp } from '@mui/icons-material';
+import TeacherNavbar from '../components/TeacherNavbar';
 
-const TeacherLeaderboardData = [
-  { id: 1, student: 'John Doe', score: 98 / 100, rank: 1 },
-  { id: 2, student: 'Jane Smith', score: 95 / 100, rank: 2 },
-  { id: 3, student: 'Sam Brown', score: 93 / 100, rank: 3 },
-];
-
-const TeacherLeaderboardPage = () => {
+const AssignmentsWithLeaderboard = ({ teacherId }) => {
+  const [assignments, setAssignments] = useState([]);
+  const [leaderboardData, setLeaderboardData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedAssignmentTitle, setSelectedAssignmentTitle] = useState('');
+
+  useEffect(() => {
+    if (!teacherId) {
+      console.error('teacherId is undefined');
+      return;
+    }
+
+    // Fetch assignments for the student's class
+    const fetchAssignments = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/api/classAssignments/${teacherId}`);
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setAssignments(data);
+        } else {
+          setAssignments([]);
+        }
+      } catch (error) {
+        console.error('Error fetching assignments:', error);
+        setAssignments([]);
+      }
+    };
+
+    fetchAssignments();
+  }, [teacherId]);
+
+  const handleViewLeaderboard = async (assignmentId, assignmentTitle) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/leaderboard/${assignmentId}`);
+      const data = await response.json();
+      setLeaderboardData(data);
+      setSelectedAssignmentTitle(assignmentTitle);
+      setModalOpen(true);
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+    }
+  };
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  const filteredData = TeacherLeaderboardData.filter((entry) =>
-    entry.student.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredAssignments = assignments.filter((assignment) =>
+    assignment.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
 
   return (
     <div style={{ padding: '20px' }}>
       <Typography variant="h4" gutterBottom style={{ fontWeight: 'bolder', padding: '10px 20px' }}>
-        Leaderboard
+        Assignments LeaderBoard
       </Typography>
       <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
         <TextField
@@ -50,36 +92,66 @@ const TeacherLeaderboardPage = () => {
           <TableHead>
             <TableRow style={{ background: '#bfd3e0' }}>
               <TableCell>#</TableCell>
-              <TableCell>Student</TableCell>
-              <TableCell>Score</TableCell>
-              <TableCell>Rank</TableCell>
+              <TableCell>Assignments</TableCell>
+              <TableCell>Leaderboard</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredData.map((entry) => (
-              <TableRow key={entry.id}>
-                <TableCell>{entry.id}</TableCell>
-                <TableCell>{entry.student}</TableCell>
-                <TableCell>{entry.score}</TableCell>
-                <TableCell>{entry.rank}</TableCell>
+            {filteredAssignments.map((assignment, index) => (
+              <TableRow key={assignment._id}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{assignment.title}</TableCell>
+                <TableCell>
+                  <Button sx={{background: '#5e9bc1', color:'white'}} onClick={() => handleViewLeaderboard(assignment._id, assignment.title)}>View Leaderboard</Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Modal open={modalOpen} onClose={handleCloseModal}>
+        <Box sx={{ padding: 2, backgroundColor: 'white', margin: 'auto', marginTop: '10%', width: '50%', maxHeight: '80vh', overflow: 'auto' }}>
+          <Typography variant="h6">Leaderboard for {selectedAssignmentTitle}</Typography>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Student Name</TableCell>
+                  <TableCell>Marks</TableCell>
+                  <TableCell>Submission Date</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {leaderboardData.map((entry, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{entry.studentName}</TableCell>
+                    <TableCell>{entry.marks}</TableCell>
+                    <TableCell>{new Date(entry.submissionDate).toLocaleDateString()}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      </Modal>
     </div>
   );
 };
-const TeacherLeaderboard = () => {
-  return (
-    <>
-      <div className='TeacherLeaderboard'>
-        <TeacherNavbar className='TeacherNavbar' />
-        <TeacherLeaderboardPage />
-      </div>
 
-    </>
+const TeacherLeaderBoard = () => {
+  const { teacherId } = useParams();
+  
+  useEffect(() => {
+    console.log(`Loaded Assignments component with teacherId: ${teacherId}`);
+  }, [teacherId]);
+
+  return (
+    <div className='leaderboard'>
+      <TeacherNavbar/>
+      <AssignmentsWithLeaderboard teacherId={teacherId} />
+    </div>
   );
 };
 
-export default TeacherLeaderboard;
+export default TeacherLeaderBoard;

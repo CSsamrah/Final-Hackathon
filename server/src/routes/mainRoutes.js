@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const {loginUser,signupUser, logout}=require('../controllers/registerControllers');
-const { submitAssignment,createAssignment,getAssignmentUrl } = require('../controllers/assignmentControllers');
+const { submitAssignment,createAssignment,getAssignmentUrl, getLeaderboard, getAssignmentsByTeacherClass, getAssignmentsByStudentClass } = require('../controllers/assignmentControllers');
 
 const multer = require('multer');
 const { getCurrentAssignments, getSubmittedAssignments, getFailedAssignments, getParticularAssignment } = require('../controllers/studentController');
@@ -30,6 +30,10 @@ router.get('/studentsfailed/:teacherId',getFailedAssignmentsForClass)
 router.put('/marks/:submissionId',updateMarks)
 router.put('/remarks/:submissionId',updateRemarks)
 router.get('/getAssignment/:submissionId', getAssignmentUrl);
+router.get('/leaderboard/:assignmentId',getLeaderboard);
+router.get('/classAssignments/:teacherId',getAssignmentsByTeacherClass)
+router.get('/studentAssignments/:studentId',getAssignmentsByStudentClass)
+
 
 
 

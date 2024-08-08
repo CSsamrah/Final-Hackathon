@@ -131,6 +131,72 @@ const getAssignmentUrl = async (req, res) => {
     }
   };
 
+const getLeaderboard=async(req,res)=>{
+    try {
+        const { assignmentId } = req.params;
+
+        // Fetch all submissions for the given assignment
+        const submissions = await Submission.find({ assignmentId })
+            .populate('studentId', 'name') // Populate studentId field with student name
+            .sort({ marks: -1 }); // Sort by marks in descending order
+
+        // Construct the leaderboard data
+        const leaderboard = submissions.map(submission => ({
+            studentName: submission.studentId.name, // Assuming `name` is the student's name field
+            marks: submission.marks,
+            submissionDate: submission.submissionDate
+        }));
+
+        res.status(200).json(leaderboard);
+    } catch (error) {
+        console.error('Error fetching leaderboard:', error);
+        res.status(500).send({ message: 'An error occurred while fetching the leaderboard.' });
+    }
+};
+const getAssignmentsByTeacherClass = async (req, res) => {
+    try {
+        const { teacherId } = req.params;
+
+        // Find the teacher by teacherId and extract the class
+        const teacher = await Teacher.findById(teacherId);
+        if (!teacher) {
+            return res.status(404).json({ message: 'Teacher not found' });
+        }
+
+        const { class: teacherClass } = teacher;
+
+        // Fetch assignments for the extracted class
+        const assignments = await Assignment.find({ class: teacherClass }).select('title _id'); // Selecting only title and _id fields
+
+        res.status(200).json(assignments);
+    } catch (error) {
+        console.error('Error fetching assignments:', error);
+        res.status(500).json({ message: 'An error occurred while fetching assignments.' });
+    }
+};
+
+const getAssignmentsByStudentClass = async (req, res) => {
+    try {
+        const { studentId } = req.params;
+
+        // Find the teacher by teacherId and extract the class
+        const student = await Student.findById(studentId);
+        if (!student) {
+            return res.status(404).json({ message: 'student not found' });
+        }
+
+       const studentClass=student.class;
+
+        // Fetch assignments for the extracted class
+        const assignments = await Assignment.find({ class: studentClass }).select('title _id'); // Selecting only title and _id fields
+
+        res.status(200).json(assignments);
+    } catch (error) {
+        console.error('Error fetching assignments:', error);
+        res.status(500).json({ message: 'An error occurred while fetching assignments.' });
+    }
+};
+
 module.exports={
-    submitAssignment,createAssignment,getAssignmentUrl
+    submitAssignment,createAssignment,getAssignmentUrl,getLeaderboard,getAssignmentsByTeacherClass,getAssignmentsByStudentClass
 }
