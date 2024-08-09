@@ -7,18 +7,26 @@ import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const TeacherNavbar = ({ name }) => {
   const { teacherId } = useParams();
   const navigate = useNavigate();
-  const [isNavShowing, setIsNavShowing] = useState(window.innerWidth > 800 ? true : false);
+  const [isNavShowing, setIsNavShowing] = useState(window.innerWidth > 800);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
   const [currentTeacherName, setCurrentTeacherName] = useState(name);
 
   useEffect(() => {
     setCurrentTeacherName(name);
+    const handleResize = () => {
+      setIsNavShowing(window.innerWidth > 800);
+      setIsMobile(window.innerWidth < 800);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [name]);
 
   const closeNavHandler = () => {
@@ -38,11 +46,11 @@ const TeacherNavbar = ({ name }) => {
   };
 
   const handleLogout = async () => {
-    const token = localStorage.getItem('token'); // Retrieve token from local storage
+    const token = localStorage.getItem('token');
 
     if (!token) {
       alert('No token found. Please log in again.');
-      navigate('/'); // Redirect to login page
+      navigate('/');
       return;
     }
 
@@ -51,22 +59,21 @@ const TeacherNavbar = ({ name }) => {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
       if (response.ok) {
-        localStorage.removeItem('token'); // Remove token from local storage
-        navigate('/'); // Redirect to login page
-
+        localStorage.removeItem('token');
+        navigate('/');
         window.history.pushState(null, '', window.location.href);
         window.onpopstate = function () {
-        navigate('/');
-      }
+          navigate('/');
+        };
       } else {
         const result = await response.json();
         console.error('Logout failed:', result.message);
-        alert('Logout failed: ' + (result.message || 'Unknown error'));
+        alert(`Logout failed: ${result.message || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -74,7 +81,6 @@ const TeacherNavbar = ({ name }) => {
     }
   };
 
-  // Get the first character of the teacherName
   const avatarInitial = currentTeacherName ? currentTeacherName.charAt(0).toUpperCase() : '';
 
   return (
@@ -88,6 +94,9 @@ const TeacherNavbar = ({ name }) => {
           <li><Link to={`/failedStudents/${teacherId}`} onClick={closeNavHandler}>Failed</Link></li>
           <li><Link to={`/teacherleaderboard/${teacherId}`} onClick={closeNavHandler}>Leaderboard</Link></li>
           <li><Link to={`/upload/${teacherId}`} onClick={closeNavHandler}>Upload</Link></li>
+          {isMobile && (
+            <li><Link to="#" onClick={handleLogout}>Logout</Link></li>
+          )}
           <li className='profile_avatar'>
             <Stack direction="row" spacing={2} alignItems="center">
               <Avatar>{avatarInitial}</Avatar>
@@ -106,9 +115,7 @@ const TeacherNavbar = ({ name }) => {
                   open={Boolean(anchorEl)}
                   onClose={handleClose}
                 >
-                  <MenuItem onClick={() => { handleClose(); handleLogout(); }}>
-                    Logout
-                  </MenuItem>
+                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
                 </Menu>
               </div>
             </Stack>

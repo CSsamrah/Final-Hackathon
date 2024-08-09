@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import Logo from '../images/logo.png';
 import { FaBars } from 'react-icons/fa';
@@ -7,14 +7,25 @@ import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const Header = ({ userName }) => {
   const { studentId } = useParams();
   const navigate = useNavigate();
-  const [isNavShowing, setIsNavShowing] = useState(window.innerWidth > 800 ? true : false);
+  const [isNavShowing, setIsNavShowing] = useState(window.innerWidth > 800);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsNavShowing(window.innerWidth > 800);
+      setIsMobile(window.innerWidth < 800);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const closeNavHandler = () => {
     if (window.innerWidth < 800) {
@@ -33,32 +44,31 @@ const Header = ({ userName }) => {
   };
 
   const handleLogout = async () => {
-    const token = localStorage.getItem('token'); // or sessionStorage.getItem('token')
-  
+    const token = localStorage.getItem('token');
+
     if (!token) {
       alert('No token found. Please log in again.');
-      navigate('/'); // Redirect to login page
+      navigate('/');
       return;
     }
-  
+
     try {
       const response = await fetch('http://localhost:8000/api/logout', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
-  
-      if (response.ok) {
-        localStorage.removeItem('token'); // Remove the token from storage
-        navigate('/'); // Redirect to the login page
 
+      if (response.ok) {
+        localStorage.removeItem('token');
+        navigate('/');
         window.history.pushState(null, '', window.location.href);
         window.onpopstate = function () {
-        navigate('/');
-      }}
-       else {
+          navigate('/');
+        };
+      } else {
         const result = await response.json();
         console.error('Logout failed:', result.message);
         alert(`Logout failed: ${result.message || 'Unknown error'}`);
@@ -69,7 +79,6 @@ const Header = ({ userName }) => {
     }
   };
 
-  // Get the first character of the userName
   const avatarInitial = userName ? userName.charAt(0).toUpperCase() : '';
 
   return (
@@ -83,6 +92,9 @@ const Header = ({ userName }) => {
           <li><Link to={`/submitted/${studentId}`} onClick={closeNavHandler}>Submitted</Link></li>
           <li><Link to={`/failed/${studentId}`} onClick={closeNavHandler}>Failed</Link></li>
           <li><Link to={`/leaderboard/${studentId}`} onClick={closeNavHandler}>Leaderboard</Link></li>
+          {isMobile && (
+            <li><Link to="#" onClick={handleLogout}>Logout</Link></li>
+          )}
           <li className='profile_avatar'>
             <Stack direction="row" spacing={2} alignItems="center">
               <Avatar>{avatarInitial}</Avatar>

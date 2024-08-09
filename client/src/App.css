@@ -326,6 +326,10 @@ input {
   .nav_menu li:nth-child(4) {
     animation-delay: 900ms;
   }
+  .nav_menu li:nth-child(5) {
+    animation-delay: 1200ms;
+  }
+
 
   .nav_menu li a {
     display: block;
