@@ -1,6 +1,10 @@
-const { createUser, findUserByEmail } = require('../services/user')
+const { createUser, findUserByEmail,findStudentByUserId,findTeacherByUserId } = require('../services/user')
 const User=require('../models/Registration')
-
+const Teacher=require('../models/Teacher')
+const Student=require('../models/Student')
+const createStudent=require("../services/studentServices")
+const createTeacher=require("../services/teacherService")
+const authentication=require("../middleware/auth")
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -11,14 +15,12 @@ const signupUser = async (req, res) => {
     let token = null;
 
     try {
-        // Hash the password before saving the user
         data.password = bcrypt.hashSync(data.password, 8);
         const user = await createUser(data);
 
-        if (user.email) {
-            // Generate JWT token
-            token = jwt.sign({ email: user.email,role: user.role  }, jwtSecret, {
-                expiresIn: 86400 // expires in 24 hours
+        if (user && user.email) {
+            token = jwt.sign({ email: user.email, role: user.role }, jwtSecret, {
+                expiresIn: 86400 // 24 hours
             });
 
             res.status(201).send({ token: token, email: user.email, msg: 'Successfully signed up' });
@@ -37,6 +39,7 @@ const loginUser = async (req, res) => {
             return res.status(400).send({ msg: 'Email and password are required.' });
         }
 
+        // Find user by email in User collection
         const user = await findUserByEmail(email);
 
         if (!user) {
@@ -45,11 +48,26 @@ const loginUser = async (req, res) => {
 
         const authenticated = bcrypt.compareSync(password, user.password);
         if (authenticated) {
-            const token = jwt.sign({ email: user.email }, jwtSecret, {
-                expiresIn: '24h' // expires in 24 hours
+            const token = jwt.sign({ email: user.email, role: user.role }, jwtSecret, {
+                expiresIn: 86400 // expires in 24 hours
             });
 
-            res.status(200).send({ msg: 'Login successful.', token });
+            let response = {
+                msg: 'Login successful.',
+                token,
+                role: user.role,
+            };
+
+            // Based on the role, find the specific user ID
+            if (user.role === 'teacher') {
+                const teacher = await Teacher.findOne({ teacherId: user._id });
+                response.userId = teacher._id;
+            } else if (user.role === 'student') {
+                const student = await Student.findOne({ studentId: user._id });
+                response.userId = student._id;
+            }
+
+            res.status(200).send(response);
         } else {
             res.status(403).send({ msg: 'Incorrect email or password.' });
         }
@@ -58,8 +76,15 @@ const loginUser = async (req, res) => {
         res.status(500).send({ msg: 'An error occurred while processing your request.' });
     }
 };
+const logout= async (req, res) => {
+    const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  res.status(200).json({ message: 'Logged out successfully' });
+};
+
 
 module.exports={
     loginUser,
-    signupUser
+    signupUser,logout
 }

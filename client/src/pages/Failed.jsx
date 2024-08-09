@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import {
   Table,
@@ -14,24 +14,48 @@ import {
   Typography,
 } from '@mui/material';
 import { FilterList, GetApp } from '@mui/icons-material';
+import { useParams } from 'react-router-dom';
 
-const assignments = [
-  { id: 1, course: 'Introduction to Programming', assignment: 'Assignment 1', deadline: '2023-06-30', status: 'Failed' },
-  { id: 2, course: 'Data Structures and Algorithms', assignment: 'Assignment 2', deadline: '2023-07-14', status: 'Failed' },
-  { id: 3, course: 'Web Development Fundamentals', assignment: 'Assignment 3', deadline: '2023-07-28', status: 'Failed' },
-];
-
-const AssignmentsPage = () => {
+const AssignmentsPage = ({ studentId }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [assignments, setAssignments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/api/failed/${studentId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch assignments');
+        }
+        const data = await response.json();
+        setAssignments(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (studentId) {
+      fetchAssignments();
+    }
+  }, [studentId]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  const filteredAssignments = assignments.filter((assignment) =>
-    assignment.course.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    assignment.assignment.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredAssignments = assignments.filter((assignment) => {
+    const courseName = assignment.courseName?.toLowerCase() || '';
+    const title = assignment.title?.toLowerCase() || '';
+    const searchTermLower = searchTerm.toLowerCase();
+    return courseName.includes(searchTermLower) || title.includes(searchTermLower);
+  });
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div style={{ padding: '20px' }}>
@@ -65,14 +89,14 @@ const AssignmentsPage = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredAssignments.map((assignment) => (
-              <TableRow key={assignment.id}>
-                <TableCell>{assignment.id}</TableCell>
-                <TableCell>{assignment.course}</TableCell>
-                <TableCell>{assignment.assignment}</TableCell>
-                <TableCell>{assignment.deadline}</TableCell>
+            {filteredAssignments.map((assignment, index) => (
+              <TableRow key={assignment._id}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{assignment.courseName}</TableCell>
+                <TableCell>{assignment.title}</TableCell>
+                <TableCell>{new Date(assignment.dueDate).toLocaleDateString()}</TableCell>
                 <TableCell>
-                  <span className="failed">{assignment.status}</span>
+                  <span className="failed">Failed</span>
                 </TableCell>
               </TableRow>
             ))}
@@ -82,14 +106,15 @@ const AssignmentsPage = () => {
     </div>
   );
 };
+
 const Failed = () => {
+  const { studentId } = useParams();
   return (
     <>
       <div className='Failed'>
         <Header className='header' />
-        <AssignmentsPage />
+        <AssignmentsPage studentId={studentId} />
       </div>
-
     </>
   );
 };

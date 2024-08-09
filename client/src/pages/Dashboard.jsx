@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import Header from '../components/Header';
-import { Link } from 'react-router-dom';
-
 import {
   Table,
   TableBody,
@@ -17,22 +16,48 @@ import {
 } from '@mui/material';
 import { FilterList, GetApp } from '@mui/icons-material';
 
-const assignments = [
-  { id: 1, name: 'Introduction to Programming Assignment 1', deadline: '2023-06-30', submit: 'UPLOAD' },
-  { id: 2, name: 'Data Structures and Algorithms Assignment 2', deadline: '2023-07-14', submit: 'UPLOAD' },
-  { id: 3, name: 'Assignment 3', deadline: '2023-07-28', submit: 'UPLOAD' },
-];
-
 const AssignmentsPage = () => {
+  const { studentId } = useParams();
+  const [assignments, setAssignments] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/api/current/${studentId}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const contentType = response.headers.get('Content-Type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Received non-JSON response');
+        }
+
+        const data = await response.json();
+        setAssignments(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAssignments();
+  }, [studentId]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
   const filteredAssignments = assignments.filter((assignment) =>
-    assignment.name.toLowerCase().includes(searchTerm.toLowerCase())
+    assignment.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (loading) return <Typography>Loading...</Typography>;
+  if (error) return <Typography>Error: {error}</Typography>;
 
   return (
     <div style={{ padding: '20px' }}>
@@ -52,7 +77,8 @@ const AssignmentsPage = () => {
           value={searchTerm}
           onChange={handleSearchChange}
           sx={{ ml: 'auto' }}
-          style={{ border: 'none', padding: '10px 20px' }} />
+          style={{ border: 'none', padding: '10px 20px' }}
+        />
       </Stack>
       <TableContainer component={Paper}>
         <Table>
@@ -65,15 +91,17 @@ const AssignmentsPage = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredAssignments.map((assignment) => (
-              <TableRow key={assignment.id}>
-                <TableCell>{assignment.id}</TableCell>
-                <TableCell>{assignment.name}</TableCell>
-                <TableCell>{assignment.deadline}</TableCell>
+            {filteredAssignments.map((assignment, index) => (
+              <TableRow key={assignment._id}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{assignment.title}</TableCell>
+                <TableCell>{new Date(assignment.dueDate).toLocaleDateString()}</TableCell>
                 <TableCell>
-                  <Button variant="contained" style={{ background: "white", color: "#0D6DB7", border: "none", boxShadow: "none", fontWeight: "bold" }}>
-                    <Link to="/assignmentsubmission">{assignment.submit}</Link>
-                  </Button>
+                  <Link to={`/assignmentsubmission/${studentId}/${assignment._id}`}>
+                    <Button variant="contained" style={{ background: "white", color: "#0D6DB7", border: "none", boxShadow: "none", fontWeight: "bold" }}>
+                      Submit
+                    </Button>
+                  </Link>
                 </TableCell>
               </TableRow>
             ))}
@@ -86,13 +114,10 @@ const AssignmentsPage = () => {
 
 const Dashboard = () => {
   return (
-    <>
-      <div className='dashboard'>
-        <Header className='header' />
-        <AssignmentsPage />
-      </div>
-
-    </>
+    <div className='dashboard'>
+      <Header className='header' />
+      <AssignmentsPage />
+    </div>
   );
 };
 

@@ -1,71 +1,62 @@
 import React from 'react';
-import { FormControl, InputLabel, MenuItem, Select, Button, TextField } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import './sidebar.css';
 
-export default function Sidebar() {
-    const [className, setClassName] = React.useState('');
-    const [students, setStudents] = React.useState('');
-    const [points, setPoints] = React.useState('');
-    const [dueDate, setDueDate] = React.useState('');
-    const [topic, setTopic] = React.useState('');
-
-    const handleChange = (event, setState) => {
-        setState(event.target.value);
-    };
-
+export default function Sidebar({ handleInputChange }) {
     return (
         <div className="sidebar">
             <FormControl variant="outlined" className="form-control">
                 <InputLabel>Class</InputLabel>
                 <Select
-                    value={className}
-                    onChange={(e) => handleChange(e, setClassName)}
+                    name="classTeaches"
+                    onChange={handleInputChange}
                     label="Class"
                 >
                     <MenuItem value="">
                         <em>None</em>
                     </MenuItem>
-                    <MenuItem value="hackathonA">Hackathon A</MenuItem>
-                    <MenuItem value="hackathonB">Hackathon B</MenuItem>
+                    <MenuItem value="G-10">G-10</MenuItem>
+                    <MenuItem value="G-12">G-12</MenuItem>
                 </Select>
             </FormControl>
 
             <FormControl variant="outlined" className="form-control">
-                <InputLabel>Students</InputLabel>
+                <InputLabel>Course Name</InputLabel>
                 <Select
-                    value={students}
-                    onChange={(e) => handleChange(e, setStudents)}
-                    label="Students"
+                    name="courseName"
+                    onChange={handleInputChange}
+                    label="CourseName"
                 >
                     <MenuItem value="">
                         <em>None</em>
                     </MenuItem>
-                    <MenuItem value="allStudents">All Students</MenuItem>
-                    <MenuItem value="groupA">Group A</MenuItem>
+                    <MenuItem value="web development">web development </MenuItem>
+                    <MenuItem value="Graphic designing">Graphic designing</MenuItem>
                 </Select>
             </FormControl>
 
             <FormControl variant="outlined" className="form-control">
                 <InputLabel>Points</InputLabel>
                 <Select
-                    value={points}
-                    onChange={(e) => handleChange(e, setPoints)}
+                    name="points"
+                    onChange={handleInputChange}
                     label="Points"
                 >
                     <MenuItem value="">
                         <em>None</em>
                     </MenuItem>
+                    <MenuItem value={20}>20</MenuItem>
+                    <MenuItem value={50}>50</MenuItem>
                     <MenuItem value={100}>100</MenuItem>
                     <MenuItem value={200}>200</MenuItem>
                 </Select>
             </FormControl>
 
             <FormControl variant="outlined" className="form-control">
-
                 <TextField
                     type="date"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
+                    name="dueDate"
+                    onChange={handleInputChange}
                     label="Due Date"
                     InputLabelProps={{ shrink: true }}
                 />
@@ -73,10 +64,13 @@ export default function Sidebar() {
 
             <FormControl variant="outlined" className="form-control">
                 <TextField
+                    name="topic"
                     placeholder="Topic"
                     id="fullWidth"
                     multiline
-                    variant="outlined">
+                    variant="outlined"
+                    onChange={handleInputChange}
+                >
                 </TextField>
             </FormControl>
         </div>
