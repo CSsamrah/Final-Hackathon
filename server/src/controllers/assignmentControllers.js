@@ -7,42 +7,17 @@ const Student=require('../models/Student')
 const {createAssign}=require('../services/teacherService')
 const mongoose = require('mongoose');
 
-const admin = require('firebase-admin');
 
-// Function to parse the service account key
-const getServiceAccount = () => {
-    try {
-        // Parse JSON from environment variable
-        const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-        if (!serviceAccountJson) {
-            throw new Error('FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set.');
-        }
-        return JSON.parse(serviceAccountJson);
-    } catch (error) {
-        console.error('Error parsing FIREBASE_SERVICE_ACCOUNT_KEY:', error);
-        process.exit(1); // Exit the process if JSON parsing fails
-    }
-};
+var admin = require("firebase-admin");
 
-// Initialize Firebase Admin SDK
-const initializeFirebase = () => {
-    try {
-        const serviceAccount = getServiceAccount();
-        admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount),
-            storageBucket: 'assignmentproject-a5ea3.appspot.com'
-        });
-        console.log('Firebase Admin SDK initialized successfully.');
-    } catch (error) {
-        console.error('Error initializing Firebase Admin SDK:', error);
-        process.exit(1); // Exit the process if initialization fails
-    }
-};
+var serviceAccount = require("./ServiceAccountKey.json");
 
-// Call the function to initialize Firebase
-initializeFirebase();
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: "gs://assignmentproject-a5ea3.appspot.com"
+});
 
-const bucket = admin.storage().bucket();
+var bucket = admin.storage().bucket();
 
 // submit assignment 
 const submitAssignment = async (req, res) => {
