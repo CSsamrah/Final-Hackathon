@@ -19,6 +19,7 @@ import { FilterList, GetApp } from '@mui/icons-material';
 const AssignmentsPage = () => {
   const { studentId } = useParams();
   const [assignments, setAssignments] = useState([]);
+  const [message, setMessage] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -31,13 +32,15 @@ const AssignmentsPage = () => {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const contentType = response.headers.get('Content-Type');
-        if (!contentType || !contentType.includes('application/json')) {
-          throw new Error('Received non-JSON response');
-        }
-
         const data = await response.json();
-        setAssignments(data);
+
+        // Check if response contains a message or assignments
+        if (data.message) {
+          setMessage(data.message);
+          setAssignments([]);
+        } else {
+          setAssignments(data);
+        }
       } catch (error) {
         setError(error.message);
       } finally {
@@ -65,12 +68,6 @@ const AssignmentsPage = () => {
         Current Assignments
       </Typography>
       <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
-        <Button variant="outlined" startIcon={<FilterList />} style={{ border: 'none', padding: '10px 20px' }}>
-          Filters
-        </Button>
-        <Button variant="outlined" startIcon={<GetApp />} style={{ border: 'none', padding: '10px 20px' }}>
-          Export
-        </Button>
         <TextField
           variant="outlined"
           placeholder="Search"
@@ -80,6 +77,7 @@ const AssignmentsPage = () => {
           style={{ border: 'none', padding: '10px 20px' }}
         />
       </Stack>
+
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -91,26 +89,44 @@ const AssignmentsPage = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredAssignments.map((assignment, index) => (
-              <TableRow key={assignment._id}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{assignment.title}</TableCell>
-                <TableCell>{new Date(assignment.dueDate).toLocaleDateString()}</TableCell>
-                <TableCell>
-                  <Link to={`/assignmentsubmission/${studentId}/${assignment._id}`}>
-                    <Button variant="contained" style={{ background: "white", color: "#0D6DB7", border: "none", boxShadow: "none", fontWeight: "bold" }}>
-                      Submit
-                    </Button>
-                  </Link>
+            {filteredAssignments.length > 0 ? (
+              filteredAssignments.map((assignment, index) => (
+                <TableRow key={assignment._id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{assignment.title}</TableCell>
+                  <TableCell>{new Date(assignment.dueDate).toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    <Link to={`/assignmentsubmission/${studentId}/${assignment._id}`}>
+                      <Button
+                        variant="contained"
+                        style={{
+                          background: 'white',
+                          color: '#0D6DB7',
+                          border: 'none',
+                          boxShadow: 'none',
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        Submit
+                      </Button>
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={4} align="center">
+                  {message || 'No current assignments available'}
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>
     </div>
   );
 };
+
 
 const Dashboard = () => {
   return (

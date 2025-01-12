@@ -4,28 +4,52 @@ const Submission=require('../models/Submission')
 
 const getCurrentAssignments = async (req, res) => {
     try {
-        const { studentId } = req.params; 
+        const { studentId } = req.params;
 
-       
+        // Validate studentId
+        if (!studentId) {
+            return res.status(400).json({ message: "Student ID is required" });
+        }
+
+        // Fetch student
         const student = await Student.findById(studentId);
         if (!student) {
-            return res.status(404).json({ message: 'Student not found' });
+            return res.status(404).json({ message: "Student not found" });
         }
         const studentClass = student.class;
 
-       
-        const futureAssignments = await Assignment.find({ class: studentClass, dueDate: { $gte: new Date() } });
+        // Fetch assignments
+        const futureAssignments = await Assignment.find({
+            class: studentClass,
+            dueDate: { $gte: new Date() }
+        });
 
-        
-        const studentSubmissions = await Submission.find({ studentId, assignmentId: { $in: futureAssignments.map(a => a._id) } });
+        if (!futureAssignments.length) {
+            return res.status(200).json({ message: "No current assignments available" });
+        }
 
-        
-        const submittedAssignmentIds = new Set(studentSubmissions.map(sub => sub.assignmentId.toString()));
+        // Fetch submissions
+        const studentSubmissions = await Submission.find({
+            studentId,
+            assignmentId: { $in: futureAssignments.map(a => a._id) }
+        });
 
-        const unsubmittedAssignments = futureAssignments.filter(assignment => !submittedAssignmentIds.has(assignment._id.toString()));
+        // Filter unsubmitted assignments
+        const submittedAssignmentIds = new Set(
+            studentSubmissions.map(sub => sub.assignmentId.toString())
+        );
+
+        const unsubmittedAssignments = futureAssignments.filter(
+            assignment => !submittedAssignmentIds.has(assignment._id.toString())
+        );
+
+        if (!unsubmittedAssignments.length) {
+            return res.status(200).json({ message: "All assignments have been submitted" });
+        }
 
         res.status(200).json(unsubmittedAssignments);
     } catch (error) {
+        console.error("Error fetching current assignments:", error);
         res.status(500).json({ message: "Failed to fetch current assignments", error });
     }
 };
@@ -36,6 +60,7 @@ const getSubmittedAssignments = async (req, res) => {
     try {
         const submissions = await Submission.find({ studentId }).populate('assignmentId');
         res.status(200).json(submissions);
+        
     } catch (error) {
         res.status(500).json({ message: "Failed to fetch submitted assignments", error });
     }

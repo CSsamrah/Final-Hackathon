@@ -19,46 +19,59 @@ import { FilterList, GetApp } from '@mui/icons-material';
 const AssignmentsPageFailed = ({ teacherId }) => {
     const [assignments, setAssignments] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [loading, setLoading] = useState(true);
 
+    // Fetch assignments on component mount
     useEffect(() => {
         const fetchAssignments = async () => {
             try {
                 const cacheBuster = new Date().getTime();
                 console.log(`Fetching assignments for teacherId: ${teacherId}`);
                 const response = await fetch(`http://localhost:8000/api/studentsfailed/${teacherId}?cacheBuster=${cacheBuster}`);
-                
-                console.log(`Response status: ${response.status}`);
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-    
+
                 const data = await response.json();
-                
-                console.log('Fetched assignments:', data);
                 setAssignments(data);
+                setLoading(false);
             } catch (error) {
                 console.log('Error fetching assignments:', error);
+                setLoading(false);
             }
         };
-    
+
         fetchAssignments();
     }, [teacherId]);
 
+    // Update search term on input change
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
     };
 
-    const filteredAssignments = assignments.filter((assignment) =>
-        assignment.studentsNotSubmitted.some(student =>
+    // Filter assignments and students based on search term
+    const filteredAssignments = assignments.filter((assignment) => {
+        const isAssignmentMatch = assignment.assignmentTitle.toLowerCase().includes(searchTerm.toLowerCase());
+        const isStudentMatch = assignment.studentsNotSubmitted.some(student =>
             student.studentName.toLowerCase().includes(searchTerm.toLowerCase())
-        ) || assignment.assignmentTitle.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+        );
+
+        return isAssignmentMatch || isStudentMatch;
+    });
+
+    if (loading) {
+        return <Typography variant="h6">Loading failed assignments...</Typography>;
+    }
+
+    if (filteredAssignments.length === 0) {
+        return <Typography variant="h6">No failed assignments found</Typography>;
+    }
 
     return (
         <div style={{ padding: '20px' }}>
             <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bolder', padding: '10px 20px' }}>
-                Failed Assignment
+                Failed Assignments
             </Typography>
             <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
                 <Button variant="outlined" startIcon={<FilterList />} sx={{ border: 'none', padding: '10px 20px' }}>
@@ -87,19 +100,22 @@ const AssignmentsPageFailed = ({ teacherId }) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredAssignments.map((assignment, index) => (
+                        {filteredAssignments.map((assignment, assignmentIndex) =>
                             assignment.studentsNotSubmitted.map((student, studentIndex) => (
                                 <TableRow key={`${assignment.assignmentId}-${student.studentId}`}>
-                                    <TableCell>{index * assignment.studentsNotSubmitted.length + studentIndex + 1}</TableCell>
+                                    {/* Sequential numbering based on student entries */}
+                                    <TableCell>
+                                        {assignmentIndex * assignment.studentsNotSubmitted.length + studentIndex + 1}
+                                    </TableCell>
                                     <TableCell>{student.studentName}</TableCell>
                                     <TableCell>{assignment.assignmentTitle}</TableCell>
                                     <TableCell>{new Date(assignment.dueDate).toLocaleDateString()}</TableCell>
                                     <TableCell>
-                                        <span className="failed">Failed</span>
+                                        <span style={{ color: 'red', fontWeight: 'bold' }}>Failed</span>
                                     </TableCell>
                                 </TableRow>
                             ))
-                        ))}
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -109,7 +125,7 @@ const AssignmentsPageFailed = ({ teacherId }) => {
 
 const FailedAssignments = () => {
     const { teacherId } = useParams();
-    
+
     useEffect(() => {
         console.log(`Loaded FailedAssignments component with teacherId: ${teacherId}`);
     }, [teacherId]);

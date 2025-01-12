@@ -59,64 +59,61 @@ const getFailedAssignmentsForClass = async (req, res) => {
     const { teacherId } = req.params;
 
     try {
-        // Get the class the teacher is teaching
         const teacher = await Teacher.findById(teacherId);
         if (!teacher) {
             return res.status(404).json({ message: 'Teacher not found' });
         }
         const teacherClass = teacher.class;
 
-        // Find assignments for the class that have passed their due date
         const assignments = await Assignment.find({ class: teacherClass, dueDate: { $lt: new Date() } });
         if (!assignments || assignments.length === 0) {
             return res.status(200).json({ message: 'No overdue assignments found for this class' });
         }
 
-        // Extract assignment IDs
-        const assignmentIds = assignments.map(assignment => assignment._id);
+        const assignmentIds = assignments.map(assignment => assignment._id.toString());
 
-        // Find all students in the teacher's class
         const students = await Student.find({ class: teacherClass });
         if (!students || students.length === 0) {
             return res.status(200).json({ message: 'No students found for this class' });
         }
 
-        // Get all submissions by these students
         const submissions = await Submission.find({
-            studentId: { $in: students.map(student => student._id) },
+            studentId: { $in: students.map(student => student._id.toString()) },
             assignmentId: { $in: assignmentIds }
         });
 
-        // Create a map to track assignments and the students who have not submitted
-        const failedAssignmentsMap = {};
+        // Create a submission map to track which students submitted which assignments
+        const submissionsMap = new Map();
+        submissions.forEach(submission => {
+            const key = `${submission.assignmentId}-${submission.studentId}`;
+            submissionsMap.set(key, true);
+        });
 
-        assignments.forEach(assignment => {
-            failedAssignmentsMap[assignment._id] = {
+        // Track failed submissions for each assignment
+        const failedAssignments = assignments.map(assignment => {
+            const studentsNotSubmitted = students.filter(student => {
+                const key = `${assignment._id}-${student._id}`;
+                return !submissionsMap.has(key);
+            });
+
+            return {
                 assignmentId: assignment._id,
                 assignmentTitle: assignment.title,
                 dueDate: assignment.dueDate,
-                studentsNotSubmitted: []
+                studentsNotSubmitted: studentsNotSubmitted.map(student => ({
+                    studentId: student._id,
+                    studentName: student.name
+                }))
             };
         });
 
-        const submittedAssignmentsByStudents = new Set(submissions.map(submission => submission.assignmentId.toString()));
-
-        students.forEach(student => {
-            assignmentIds.forEach(assignmentId => {
-                if (!submittedAssignmentsByStudents.has(assignmentId)) {
-                    failedAssignmentsMap[assignmentId].studentsNotSubmitted.push({
-                        studentId: student._id,
-                        studentName: student.name
-                    });
-                }
-            });
-        });
-
-        // Convert the map to an array, filtering out assignments with no students who failed to submit
-        const result = Object.values(failedAssignmentsMap).filter(assignment => assignment.studentsNotSubmitted.length > 0);
-        console.log(result)
+        // Filter assignments where all students submitted
+        const result = failedAssignments.filter(
+            assignment => assignment.studentsNotSubmitted.length > 0
+        );
 
         res.status(200).json(result);
+        console.log(result)
     } catch (error) {
         console.error('Error fetching failed assignments:', error);
         res.status(500).json({ message: "Failed to fetch failed assignments", error: error.message || error });

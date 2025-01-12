@@ -20,18 +20,24 @@ const AssignmentsPage = ({ studentId }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchAssignments = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/submitted/${studentId}`); 
+        const response = await fetch(`http://localhost:8000/api/submitted/${studentId}`);
         if (!response.ok) {
           throw new Error('Failed to fetch assignments');
         }
         const data = await response.json();
         console.log('Fetched Assignments:', data); // Inspect the structure of the data
+        if (data.message) {
+        setMessage(data.message);
+        setAssignments([])
+      } else {
         setAssignments(data);
+      }
       } catch (error) {
         setError(error.message);
       } finally {
@@ -91,20 +97,28 @@ const AssignmentsPage = ({ studentId }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredAssignments.map((assignment, index) => (
-              <TableRow key={assignment._id}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{assignment.assignmentId.courseName}</TableCell>
-                <TableCell>{assignment.assignmentId.title}</TableCell>
-                <TableCell>{assignment.marks}</TableCell>
-                <TableCell>
-                  <span className={assignment.status.toLowerCase()}>{assignment.status}</span>
-                </TableCell>
-                <TableCell>
-                  <a href={assignment.file} target="_blank" rel="noopener noreferrer">View File</a>
+            {filteredAssignments.length > 0 ? (
+              filteredAssignments.map((assignment, index) => (
+                <TableRow key={assignment._id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{assignment.assignmentId.courseName}</TableCell>
+                  <TableCell>{assignment.assignmentId.title}</TableCell>
+                  <TableCell>{assignment.marks}</TableCell>
+                  <TableCell>
+                    <span className={assignment.status.toLowerCase()}>{assignment.status}</span>
+                  </TableCell>
+                  <TableCell>
+                    <a href={assignment.file} target="_blank" rel="noopener noreferrer">View File</a>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={4} align="center">
+                  {message || 'no submissions'}
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>

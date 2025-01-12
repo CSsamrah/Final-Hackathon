@@ -19,7 +19,7 @@ import {
 
 const AssignmentsWithLeaderboard = ({ studentId }) => {
   const [assignments, setAssignments] = useState([]);
-  const [leaderboardData, setLeaderboardData] = useState([]);
+  const [leaderboardData, setLeaderboardData] = useState([]); // Ensure initial state is an array
   const [searchTerm, setSearchTerm] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedAssignmentTitle, setSelectedAssignmentTitle] = useState('');
@@ -38,6 +38,7 @@ const AssignmentsWithLeaderboard = ({ studentId }) => {
         if (Array.isArray(data)) {
           setAssignments(data);
         } else {
+          console.error('Unexpected data format for assignments:', data);
           setAssignments([]);
         }
       } catch (error) {
@@ -53,11 +54,20 @@ const AssignmentsWithLeaderboard = ({ studentId }) => {
     try {
       const response = await fetch(`http://localhost:8000/api/leaderboard/${assignmentId}`);
       const data = await response.json();
-      setLeaderboardData(data);
+
+      // Ensure `data` is an array
+      if (Array.isArray(data)) {
+        setLeaderboardData(data);
+      } else {
+        console.error('Unexpected data format for leaderboard:', data);
+        setLeaderboardData([]);
+      }
+
       setSelectedAssignmentTitle(assignmentTitle);
       setModalOpen(true);
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
+      setLeaderboardData([]); // Reset leaderboard data in case of an error
     }
   };
 
@@ -85,7 +95,8 @@ const AssignmentsWithLeaderboard = ({ studentId }) => {
           value={searchTerm}
           onChange={handleSearchChange}
           sx={{ ml: 'auto' }}
-          style={{ border: 'none', padding: '10px 20px' }} />
+          style={{ border: 'none', padding: '10px 20px' }}
+        />
       </Stack>
       <TableContainer component={Paper}>
         <Table>
@@ -102,7 +113,16 @@ const AssignmentsWithLeaderboard = ({ studentId }) => {
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{assignment.title}</TableCell>
                 <TableCell>
-                  <Button sx={{background: '#5e9bc1', color: 'white', '&:hover': { background: '#4a8ab7', color: '#e0e0e0'}}} onClick={() => handleViewLeaderboard(assignment._id, assignment.title)}>View Leaderboard</Button>
+                  <Button
+                    sx={{
+                      background: '#5e9bc1',
+                      color: 'white',
+                      '&:hover': { background: '#4a8ab7', color: '#e0e0e0' },
+                    }}
+                    onClick={() => handleViewLeaderboard(assignment._id, assignment.title)}
+                  >
+                    View Leaderboard
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -111,7 +131,17 @@ const AssignmentsWithLeaderboard = ({ studentId }) => {
       </TableContainer>
 
       <Modal open={modalOpen} onClose={handleCloseModal}>
-        <Box sx={{ padding: 2, backgroundColor: 'white', margin: 'auto', marginTop: '10%', width: '50%', maxHeight: '80vh', overflow: 'auto' }}>
+        <Box
+          sx={{
+            padding: 2,
+            backgroundColor: 'white',
+            margin: 'auto',
+            marginTop: '10%',
+            width: '50%',
+            maxHeight: '80vh',
+            overflow: 'auto',
+          }}
+        >
           <Typography variant="h6">Leaderboard for {selectedAssignmentTitle}</Typography>
           <TableContainer component={Paper}>
             <Table>
@@ -123,13 +153,25 @@ const AssignmentsWithLeaderboard = ({ studentId }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {leaderboardData.map((entry, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{entry.studentName}</TableCell>
-                    <TableCell>{entry.marks}</TableCell>
-                    <TableCell>{new Date(entry.submissionDate).toLocaleDateString()}</TableCell>
+                {leaderboardData.length > 0 ? (
+                  leaderboardData.map((entry, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{entry.studentName || 'Unknown'}</TableCell>
+                      <TableCell>{entry.marks || 0}</TableCell>
+                      <TableCell>
+                        {entry.submissionDate
+                          ? new Date(entry.submissionDate).toLocaleDateString()
+                          : 'N/A'}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={3} align="center">
+                      No leaderboard data available.
+                    </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </TableContainer>
@@ -138,6 +180,7 @@ const AssignmentsWithLeaderboard = ({ studentId }) => {
     </div>
   );
 };
+
 
 const LeaderBoard = () => {
   const { studentId } = useParams();
